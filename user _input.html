@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>User Input – UNIfy</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        blmelody: ['BLMelody', 'sans-serif'],
+                    },
+                },
+            },
+        };
+    </script>
+
+    <style>
+        @font-face {
+            font-family: 'BLMelody';
+            src: url('/assets/fonts/BLMelody-Regular.otf') format('opentype');
+            font-weight: normal;
+            font-style: normal;
+        }
+    </style>
+
+</head>
+
+<body class="font-blmelody bg-white text-gray-900">
+
+    <!-- Navbar -->
+    <nav class="w-full px-6 py-4 shadow-md bg-white fixed top-0 left-0 z-50">
+        <div class="max-w-7xl mx-auto flex justify-between items-center">
+            <div class="flex items-center space-x-2">
+                <img src="logo.png" alt="Logo" class="h-10 w-10" />
+                <span class="font-bold text-xl">UNIfy</span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Form Section -->
+    <section class="pt-32 pb-16 px-4 max-w-3xl mx-auto">
+        <h2 class="text-3xl font-Regular mb-2">Let’s personalize your journey.</h2>
+        <p class="mb-8 text-gray-600">Tell us a bit about your academic background and accessibility needs so we can
+            build your custom university admissions roadmap.</p>
+
+        <form action="#" method="POST" class="space-y-6 bg-white p-8 rounded shadow">
+            <!-- Full Name -->
+            <div>
+                <label class="block text-sm font-medium mb-1" for="name">Full Name</label>
+                <input type="text" id="name" name="name" required
+                    class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-lime-500 focus:border-lime-500" />
+            </div>
+
+            <!-- Email -->
+            <div>
+                <label class="block text-sm font-medium mb-1" for="email">Email</label>
+                <input type="email" id="email" name="email" required
+                    class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-lime-500 focus:border-lime-500" />
+            </div>
+
+            <!-- High School -->
+            <div>
+                <label class="block text-sm font-medium mb-1" for="school">High School</label>
+                <input type="text" id="school" name="school"
+                    class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-lime-500 focus:border-lime-500" />
+            </div>
+
+            <!-- GPA -->
+            <div>
+                <label class="block text-sm font-medium mb-1" for="gpa">Current GPA</label>
+                <input type="number" step="0.1" id="gpa" name="gpa" max="4.0" min="0.0"
+                    class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-lime-500 focus:border-lime-500" />
+            </div>
+
+            <!-- Disability Type -->
+            <div>
+                <label class="block text-sm font-medium mb-1">Disability Type(s)</label>
+                <div class="flex flex-wrap gap-4">
+                    <label><input type="radio" name="disability" value="Mental" /> Mental</label>
+                    <label><input type="radio" name="disability" value="Both" /> Both</label>
+                    <label><input type="radio" name="disability" value="Physical" /> Physical</label>
+                </div>
+            </div>
+
+            <!-- Program Interests -->
+            <div>
+                <label class="block text-sm font-medium mb-1" for="program">Program Interests</label>
+                <input type="text" id="program" name="program" placeholder="e.g., Engineering, Psychology"
+                    class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-lime-500 focus:border-lime-500" />
+            </div>
+
+
+
+            <!-- Submit Button -->
+            <button type="submit"
+                class="w-full bg-lime-500 hover:bg-lime-600 text-white font-semibold py-2 px-4 rounded-md transition">
+                Generate Roadmap
+            </button>
+        </form>
+    </section>
+
+</body>
+
+</html>
