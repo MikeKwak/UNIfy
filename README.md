@@ -1,6 +1,6 @@
 # UNIfy - University Accommodation Recommendation System
 
-UNIfy is an intelligent recommendation system that helps students with disabilities find universities that best match their accessibility needs and accommodation requirements.
+UNIfy is an intelligent recommendation system that helps students with disabilities find universities that best match their accessibility needs and accommodation requirements. The project combines a machine learning backend with a modern React frontend.
 
 ## 🎯 Project Overview
 
@@ -8,6 +8,49 @@ The system uses machine learning to:
 - **Predict accommodations** needed based on student disability profiles
 - **Recommend universities** that provide the best match for accessibility needs
 - **Match students** with institutions based on accommodation availability and support ratings
+
+## 🚀 Quick Start
+
+### Prerequisites
+
+- **Node.js** (latest version) - [Download here](https://nodejs.org/en/download/)
+- **Python 3.8+** (for ML backend)
+- **8GB+ RAM** (for TensorFlow training)
+
+### Frontend Setup
+
+1. **Clone the repository**
+   ```bash
+   git clone https://github.com/michelleJeonn/UNIfy.git
+   cd UNIfy
+   ```
+
+2. **Install frontend dependencies**
+   ```bash
+   npm install
+   ```
+
+3. **Run the frontend locally**
+   ```bash
+   npm run dev
+   ```
+
+### Backend Setup (ML Pipeline)
+
+1. **Install Python dependencies**
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+2. **Verify TensorFlow installation**
+   ```bash
+   python -c "import tensorflow as tf; print(f'TensorFlow {tf.__version__} installed successfully')"
+   ```
+
+3. **Train the ML models**
+   ```bash
+   python ml_pipeline.py
+   ```
 
 ## 📊 Data Structure
 
@@ -29,32 +72,6 @@ Your cleaned CSV files contain valuable information for building the ML model:
    - GPA and academic performance
    - Health condition details
    - Severity levels and preferences
-
-## 🚀 Getting Started
-
-### Prerequisites
-
-- Python 3.8+
-- pip package manager
-- 8GB+ RAM (for TensorFlow training)
-
-### Installation
-
-1. **Clone the repository**
-   ```bash
-   git clone <your-repo-url>
-   cd UNIfy
-   ```
-
-2. **Install dependencies**
-   ```bash
-   pip install -r requirements.txt
-   ```
-
-3. **Verify installation**
-   ```bash
-   python -c "import tensorflow as tf; print(f'TensorFlow {tf.__version__} installed successfully')"
-   ```
 
 ## 🤖 Machine Learning Pipeline
 
@@ -202,7 +219,7 @@ The system evaluates:
 ```
 UNIfy/
 ├── data/
-│   └── clean/                 # Your cleaned CSV files
+│   └── clean/                 # Cleaned CSV files
 │       ├── clean_student_info.csv
 │       ├── clean_uni_info.csv
 │       └── clean_user_input.csv
@@ -210,10 +227,17 @@ UNIfy/
 │   ├── accommodation_predictor.h5
 │   ├── university_recommender.h5
 │   └── encoders.pkl
-├── ml_pipeline.py            # ML training pipeline and API functions
-├── test_system.py            # System testing and demonstration
-├── requirements.txt          # Python dependencies
-└── README.md                 # This file
+├── src/                       # React frontend
+│   ├── components/
+│   ├── pages/
+│   └── app/
+├── html-pages/               # Legacy HTML pages
+├── public/                   # Static assets
+├── ml_pipeline.py           # ML training pipeline and API functions
+├── test_system.py           # System testing and demonstration
+├── requirements.txt         # Python dependencies
+├── package.json             # Node.js dependencies
+└── README.md                # This file
 ```
 
 ## 🚨 Troubleshooting
@@ -235,6 +259,11 @@ UNIfy/
    - Verify CSV format and encoding
    - Handle missing or corrupted data
 
+4. **Frontend Issues**
+   - Ensure Node.js is installed and up to date
+   - Clear npm cache: `npm cache clean --force`
+   - Delete `node_modules` and reinstall: `rm -rf node_modules && npm install`
+
 ### Performance Optimization
 
 1. **Faster Training**
@@ -253,6 +282,7 @@ UNIfy/
 - **Real-time Updates**: Live accommodation availability
 - **Student Reviews**: Peer feedback on accessibility
 - **Advanced Analytics**: Detailed accessibility insights
+- **Full Frontend Integration**: Complete React UI with ML backend
 
 ### Model Improvements
 - **Deep Learning**: Transformer-based architectures
@@ -261,6 +291,12 @@ UNIfy/
 - **A/B Testing**: Continuous model optimization
 
 ## 📚 Technical Details
+
+### Frontend Stack
+- **React 18**: Modern UI framework
+- **TypeScript**: Type-safe JavaScript
+- **Vite**: Fast build tool and dev server
+- **Tailwind CSS**: Utility-first CSS framework
 
 ### Machine Learning Stack
 - **TensorFlow 2.x**: Neural network training and inference
