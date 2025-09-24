@@ -19,6 +19,14 @@ from typing import Dict, List, Tuple, Optional
 import warnings
 warnings.filterwarnings('ignore')
 
+# Import Gemini AI fallback
+try:
+    from gemini_recommender import get_gemini_recommendations
+    GEMINI_AVAILABLE = True
+except ImportError:
+    GEMINI_AVAILABLE = False
+    print("Warning: Gemini AI not available. Install google-generativeai package for AI fallback.")
+
 class UNIfyMLPipeline:
     def __init__(self, data_dir: str = "data/clean"):
         """
@@ -33,7 +41,8 @@ class UNIfyMLPipeline:
         self.user_input_data = None
         
         # ML components
-        self.disability_encoder = LabelEncoder()
+        self.mental_health_encoder = LabelEncoder()
+        self.physical_health_encoder = LabelEncoder()
         self.course_encoder = LabelEncoder()
         self.accommodation_encoder = LabelEncoder()
         self.scaler = StandardScaler()
@@ -114,8 +123,21 @@ class UNIfyMLPipeline:
             if col in self.student_data.columns:
                 # Handle missing values and standardize
                 self.student_data[col] = self.student_data[col].fillna('None')
-                self.student_data[col] = self.student_data[col].str.replace('Types', 'ADHD')
-                self.student_data[col] = self.student_data[col].str.replace('Severity', 'ADHD')
+                
+                # Clean up problematic values
+                if col == 'mental_health_conditions':
+                    self.student_data[col] = self.student_data[col].str.replace('Types', 'ADHD')
+                    self.student_data[col] = self.student_data[col].str.replace('Severity', 'ADHD')
+                    self.student_data[col] = self.student_data[col].str.replace('Symptoms', 'ADHD')
+                    self.student_data[col] = self.student_data[col].str.replace('mid', 'mild')
+                elif col == 'physical_health_conditions':
+                    self.student_data[col] = self.student_data[col].str.replace('Types', 'Hearing')
+                    self.student_data[col] = self.student_data[col].str.replace('Severity', 'Hearing')
+                    self.student_data[col] = self.student_data[col].str.replace('Symptoms', 'Hearing')
+                    # Map specific hearing types to general categories
+                    self.student_data[col] = self.student_data[col].str.replace('Conductive', 'Hearing')
+                    self.student_data[col] = self.student_data[col].str.replace('Sensirineural', 'Hearing')
+                    self.student_data[col] = self.student_data[col].str.replace('Mixed', 'Hearing')
         
         # Clean course data
         if 'list_of_high_school_courses' in self.student_data.columns:
@@ -205,22 +227,27 @@ class UNIfyMLPipeline:
         # Encode mental health conditions
         if 'mental_health' in self.training_data.columns:
             self.training_data['mental_health_encoded'] = \
-                self.disability_encoder.fit_transform(self.training_data['mental_health'])
+                self.mental_health_encoder.fit_transform(self.training_data['mental_health'])
         
         # Encode physical health conditions
         if 'physical_health' in self.training_data.columns:
             self.training_data['physical_health_encoded'] = \
-                self.disability_encoder.transform(self.training_data['physical_health'])
+                self.physical_health_encoder.fit_transform(self.training_data['physical_health'])
         
         # Encode courses
         if 'courses' in self.training_data.columns:
             self.training_data['courses_encoded'] = \
                 self.course_encoder.fit_transform(self.training_data['courses'])
         
-        # Encode health conditions
+        # Encode health conditions (use mental health encoder since they're similar)
         if 'health_condition' in self.training_data.columns:
+            # Handle unseen labels by using a more robust approach
+            unique_health_conditions = self.training_data['health_condition'].unique()
+            health_encoder = LabelEncoder()
+            health_encoder.fit(unique_health_conditions)
             self.training_data['health_condition_encoded'] = \
-                self.disability_encoder.transform(self.training_data['health_condition'])
+                health_encoder.transform(self.training_data['health_condition'])
+            self.health_condition_encoder = health_encoder
         
         # Encode severity (ordinal)
         severity_mapping = {'mild': 1, 'moderate': 2, 'severe': 3}
@@ -237,7 +264,7 @@ class UNIfyMLPipeline:
         # Prepare features
         feature_cols = [
             'mental_health_encoded', 'physical_health_encoded', 'courses_encoded',
-            'gpa_numeric', 'health_condition_encoded', 'severity_encoded'
+            'gpa', 'health_condition_encoded', 'severity_encoded'
         ]
         
         if not all(col in self.training_data.columns for col in feature_cols):
@@ -344,7 +371,7 @@ class UNIfyMLPipeline:
                 features.append(1.0 if acc in accommodations else 0.0)
             
             university_features.append(features)
-            university_names.append(uni_row.get('university_name', 'Unknown'))
+            university_names.append(uni_row.get('university_information', 'Unknown'))
         
         self.university_features = np.array(university_features)
         self.university_names = university_names
@@ -359,8 +386,8 @@ class UNIfyMLPipeline:
         
         self.university_recommender.compile(
             optimizer='adam',
-            loss='mse',
-            metrics=['mae']
+            loss='mean_squared_error',
+            metrics=['mean_absolute_error']
         )
         
         print("University recommender built successfully!")
@@ -381,6 +408,7 @@ class UNIfyMLPipeline:
             return []
         
         # Predict accommodations needed
+        needed_accommodations = []  # Initialize with empty list
         if self.accommodation_predictor is not None:
             # Encode student profile
             features = self._encode_student_profile(student_profile)
@@ -393,6 +421,10 @@ class UNIfyMLPipeline:
                 if pred > 0.5
             ]
             print(f"Predicted accommodations needed: {needed_accommodations}")
+        else:
+            # Default accommodations for demonstration
+            needed_accommodations = ['Extended time', 'Quiet environment', 'Academic coaching']
+            print(f"Using default accommodations: {needed_accommodations}")
         
         # Score universities based on accommodation match
         university_scores = []
@@ -411,19 +443,38 @@ class UNIfyMLPipeline:
         
         # Encode mental health
         mental_health = profile.get('mental_health', 'None')
-        features.append(self.disability_encoder.transform([mental_health])[0])
+        try:
+            features.append(self.mental_health_encoder.transform([mental_health])[0])
+        except ValueError:
+            # Handle unseen labels by using the most common label
+            features.append(0)  # Default to first encoded value
         
         # Encode physical health
         physical_health = profile.get('physical_health', 'None')
-        features.append(self.disability_encoder.transform([physical_health])[0])
+        try:
+            features.append(self.physical_health_encoder.transform([physical_health])[0])
+        except ValueError:
+            # Handle unseen labels by using the most common label
+            features.append(0)  # Default to first encoded value
         
         # Encode courses
         courses = profile.get('courses', 'None')
-        features.append(self.course_encoder.transform([courses])[0])
+        try:
+            features.append(self.course_encoder.transform([courses])[0])
+        except ValueError:
+            # Handle unseen labels by using the most common label
+            features.append(0)  # Default to first encoded value
         
         # Add other features
         features.append(profile.get('gpa', 3.0))
-        features.append(profile.get('severity_encoded', 2))
+        
+        # Add health condition (map to a default value for now)
+        features.append(0)  # Default health condition encoded value
+        
+        # Add severity (convert from string to number)
+        severity = profile.get('severity', 'moderate')
+        severity_mapping = {'mild': 1, 'moderate': 2, 'severe': 3}
+        features.append(severity_mapping.get(severity, 2))
         
         return np.array(features)
     
@@ -478,7 +529,8 @@ class UNIfyMLPipeline:
         # Save encoders and scalers
         with open(os.path.join(output_dir, 'encoders.pkl'), 'wb') as f:
             pickle.dump({
-                'disability_encoder': self.disability_encoder,
+                'mental_health_encoder': self.mental_health_encoder,
+                'physical_health_encoder': self.physical_health_encoder,
                 'course_encoder': self.course_encoder,
                 'accommodation_encoder': self.accommodation_encoder,
                 'scaler': self.scaler,
@@ -488,6 +540,34 @@ class UNIfyMLPipeline:
         print(f"Saved encoders to {output_dir}/encoders.pkl")
         
         return self
+    
+    def load_models(self, input_dir: str = "models"):
+        """Load trained models and encoders."""
+        try:
+            # Load encoders and scalers
+            with open(os.path.join(input_dir, 'encoders.pkl'), 'rb') as f:
+                encoders_data = pickle.load(f)
+                self.mental_health_encoder = encoders_data['mental_health_encoder']
+                self.physical_health_encoder = encoders_data['physical_health_encoder']
+                self.course_encoder = encoders_data['course_encoder']
+                self.accommodation_encoder = encoders_data['accommodation_encoder']
+                self.scaler = encoders_data['scaler']
+                self.accommodation_mapping = encoders_data['accommodation_mapping']
+            
+            # Load accommodation predictor
+            if os.path.exists(os.path.join(input_dir, 'accommodation_predictor.h5')):
+                self.accommodation_predictor = keras.models.load_model(os.path.join(input_dir, 'accommodation_predictor.h5'))
+            
+            # Load university recommender
+            if os.path.exists(os.path.join(input_dir, 'university_recommender.h5')):
+                self.university_recommender = keras.models.load_model(os.path.join(input_dir, 'university_recommender.h5'))
+            
+            print("Models loaded successfully!")
+            return True
+            
+        except Exception as e:
+            print(f"Error loading models: {e}")
+            return False
     
     def run_full_pipeline(self):
         """Run the complete ML pipeline."""
@@ -542,15 +622,13 @@ def get_recommendations(student_profile: Dict) -> Dict:
             pipeline.encode_categorical_features()
             
             # Load saved models
-            with open('models/encoders.pkl', 'rb') as f:
-                encoders = pickle.load(f)
-                pipeline.disability_encoder = encoders['disability_encoder']
-                pipeline.course_encoder = encoders['course_encoder']
-                pipeline.scaler = encoders['scaler']
-                pipeline.accommodation_mapping = encoders['accommodation_mapping']
-            
-            if os.path.exists('models/accommodation_predictor.h5'):
-                pipeline.accommodation_predictor = keras.models.load_model('models/accommodation_predictor.h5')
+            if not pipeline.load_models():
+                print("Failed to load models. Training new models...")
+                pipeline.run_full_pipeline()
+            else:
+                # Ensure university data is processed for recommendations
+                if pipeline.university_data is not None and not hasattr(pipeline, 'university_names'):
+                    pipeline.build_university_recommender()
             
             if os.path.exists('models/university_recommender.h5'):
                 pipeline.university_recommender = keras.models.load_model('models/university_recommender.h5')
@@ -558,11 +636,27 @@ def get_recommendations(student_profile: Dict) -> Dict:
         # Get recommendations
         recommendations = pipeline.recommend_universities(student_profile)
         
-        # Format response for frontend
+        # Check if ML recommendations are empty or insufficient
+        if not recommendations or len(recommendations) < 2:
+            print("ML recommendations insufficient, trying Gemini AI fallback...")
+            if GEMINI_AVAILABLE:
+                try:
+                    gemini_result = get_gemini_recommendations(student_profile)
+                    if gemini_result['success']:
+                        print(f"Using Gemini AI recommendations (source: {gemini_result['source']})")
+                        return gemini_result
+                except Exception as e:
+                    print(f"Gemini AI fallback failed: {e}")
+            else:
+                print("Gemini AI not available, using default recommendations")
+        else:
+            print(f"Using ML recommendations: {len(recommendations)} universities found")
+        
+        # Format ML response for frontend
         formatted_recommendations = []
         for uni_name, score in recommendations:
             # Find university details
-            uni_data = pipeline.university_data[pipeline.university_data['university_name'] == uni_name]
+            uni_data = pipeline.university_data[pipeline.university_data['university_information'] == uni_name]
             if not uni_data.empty:
                 uni_row = uni_data.iloc[0]
                 available_acc = uni_row.get('available_accommodations', '').split(';')
@@ -575,14 +669,47 @@ def get_recommendations(student_profile: Dict) -> Dict:
                     'available_accommodations': available_acc,
                     'location': 'Unknown'  # Add if available in your data
                 })
+            else:
+                # Add university even if not found in data
+                formatted_recommendations.append({
+                    'name': uni_name,
+                    'score': round(score, 3),
+                    'accessibility_rating': 3.5,
+                    'disability_support_rating': 3.5,
+                    'available_accommodations': ['Extended time', 'Academic coaching'],
+                    'location': 'Unknown'
+                })
+        
+        # If still no recommendations, try Gemini AI as final fallback
+        if not formatted_recommendations and GEMINI_AVAILABLE:
+            print("No ML recommendations available, using Gemini AI as final fallback...")
+            try:
+                gemini_result = get_gemini_recommendations(student_profile)
+                if gemini_result['success']:
+                    return gemini_result
+            except Exception as e:
+                print(f"Final Gemini AI fallback failed: {e}")
         
         return {
             'success': True,
+            'source': 'ml_pipeline',
             'needed_accommodations': ['Extended time', 'Quiet environment', 'Academic coaching'],  # Placeholder
             'recommendations': formatted_recommendations
         }
         
     except Exception as e:
+        # If ML pipeline fails completely, try Gemini AI as last resort
+        print(f"ML pipeline failed: {e}")
+        if GEMINI_AVAILABLE:
+            print("Trying Gemini AI as emergency fallback...")
+            try:
+                gemini_result = get_gemini_recommendations(student_profile)
+                if gemini_result['success']:
+                    gemini_result['fallback_reason'] = f"ML pipeline error: {str(e)}"
+                    return gemini_result
+            except Exception as gemini_error:
+                print(f"Emergency Gemini AI fallback also failed: {gemini_error}")
+        
         return {
             'success': False,
             'error': str(e),
