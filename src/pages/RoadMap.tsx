@@ -39,6 +39,27 @@ export default function RoadMap() {
           />
         </div>
       </main>
+      {/* Navigation Buttons */}
+      <div className="absolute bottom-8 left-8 flex flex-col gap-4 z-20">
+        <button
+          onClick={() => navigate("/eligibility")}
+          className="bg-[#92BD3A] text-white px-5 py-2 rounded-md hover:bg-lime-600 transition"
+        >
+          Eligibility & Prerequisites
+        </button>
+        <button
+          onClick={() => navigate("/required")}
+          className="bg-[#92BD3A] text-white px-5 py-2 rounded-md hover:bg-lime-600 transition"
+        >
+          Required Documents
+        </button>
+        <button
+          onClick={() => navigate("/submission")}
+          className="bg-[#92BD3A] text-white px-5 py-2 rounded-md hover:bg-lime-600 transition"
+        >
+          Application Submission
+        </button>
+      </div>
     </div>
   );
 }
