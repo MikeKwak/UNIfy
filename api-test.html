@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UNIfy API Test</title>
+</head>
+<body>
+    <h1>UNIfy API Connection Test</h1>
+    <div id="status">Testing...</div>
+    <div id="results"></div>
+    
+    <script>
+        async function testAPI() {
+            const statusDiv = document.getElementById('status');
+            const resultsDiv = document.getElementById('results');
+            
+            try {
+                // Test health check first
+                statusDiv.innerHTML = 'Testing health check...';
+                const healthResponse = await fetch('http://localhost:5001/');
+                
+                if (!healthResponse.ok) {
+                    throw new Error(`Health check failed: ${healthResponse.status}`);
+                }
+                
+                const healthData = await healthResponse.json();
+                console.log('Health check:', healthData);
+                
+                // Test recommendations endpoint
+                statusDiv.innerHTML = 'Testing recommendations endpoint...';
+                
+                const testProfile = {
+                    mental_health: 'ADHD',
+                    physical_health: 'None',
+                    courses: 'Computer Science',
+                    gpa: 3.8,
+                    severity: 'moderate'
+                };
+                
+                const response = await fetch('http://localhost:5001/api/recommendations', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(testProfile)
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`API request failed: ${response.status}`);
+                }
+                
+                const data = await response.json();
+                console.log('API Response:', data);
+                
+                statusDiv.innerHTML = '✅ API Connection Success!';
+                resultsDiv.innerHTML = `
+                    <h2>Results:</h2>
+                    <p><strong>Source:</strong> ${data.source}</p>
+                    <p><strong>Success:</strong> ${data.success}</p>
+                    <p><strong>Accommodations:</strong> ${data.needed_accommodations ? data.needed_accommodations.length : 0}</p>
+                    <p><strong>Universities:</strong> ${data.recommendations ? data.recommendations.length : 0}</p>
+                    <pre>${JSON.stringify(data, null, 2)}</pre>
+                `;
+                
+            } catch (error) {
+                console.error('API Test Error:', error);
+                statusDiv.innerHTML = `❌ API Error: ${error.message}`;
+                resultsDiv.innerHTML = `
+                    <h2>Error Details:</h2>
+                    <p>Make sure the Flask server is running on port 5001</p>
+                    <p>Run: <code>FLASK_PORT=5001 python app.py</code></p>
+                    <p>Error: ${error.message}</p>
+                `;
+            }
+        }
+        
+        // Run the test when page loads
+        testAPI();
+    </script>
+</body>
+</html>
