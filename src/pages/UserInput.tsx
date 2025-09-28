@@ -1,16 +1,57 @@
 import { type FormEvent } from "react";
 import { useNavigate } from "react-router-dom";
 import NavBar from "../components/NavBar";
+import { useState } from "react"; 
+import { generateRoadmapRecommendations, type StudentProfile } from "../services/api";
+
 
 export default function UserInput() {
   const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  function handleSubmit(e: FormEvent<HTMLFormElement>) {
+
+  //function handleSubmit(e: FormEvent<HTMLFormElement>) {
+  //  e.preventDefault();
+  //  // Add validation later
+
+  //  navigate("/roadmap");
+  //}
+
+  async function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    // Add validation later
+    setLoading(true);
+    setError(null);
+  
+    try {
+      const formData = new FormData(e.currentTarget);
+      
+      const studentProfile: StudentProfile = {
+        mental_health: formData.get('disability') as string || 'None',
+        physical_health: formData.get('disability-type') === 'Physical' ? 'Mobility' : 'None',
+        courses: formData.get('program') as string || 'General Studies',
+        gpa: parseFloat(formData.get('gpa') as string) || 3.0,
+        severity: 'moderate'
+      };
+  
+      // Step 1: DB verification, Step 2: LLM verification
+      const recommendations = await generateRoadmapRecommendations(studentProfile);
+      
+      sessionStorage.setItem('roadmapData', JSON.stringify({
+        studentProfile,
+        recommendations
+      }));
 
-    navigate("/roadmap");
+      navigate("/roadmap");
+    
+  } catch (err) {
+    setError('Failed to generate roadmap. Please try again.');
+  } finally {
+    setLoading(false);
   }
+}
+
+
 
   return (
     <div className="font-blmelody bg-white text-gray-900 min-h-screen">
@@ -240,10 +281,17 @@ export default function UserInput() {
             />
           </div>
 
-          <button
+          
+
+
+  <button
             type="submit"
             className="w-full bg-lime-500 hover:bg-lime-600 text-white font-semibold py-2 px-4 rounded-md transition"
           >
+
+
+
+
             Generate Roadmap
           </button>
         </form>

@@ -1,8 +1,68 @@
 import { useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
 import NavBar from "../components/NavBar";
+import type { RecommendationResult, StudentProfile } from "../services/api";
+
+
+interface RoadmapData {
+  studentProfile: StudentProfile;
+  recommendations: RecommendationResult;
+}
+
 
 export default function RoadMap() {
   const navigate = useNavigate();
+  const [roadmapData, setRoadmapData] = useState<RoadmapData | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    // Get the roadmap data from sessionStorage
+    const storedData = sessionStorage.getItem('roadmapData');
+    if (storedData) {
+      try {
+        const parsedData: RoadmapData = JSON.parse(storedData);
+        setRoadmapData(parsedData);
+      } catch (error) {
+        console.error('Error parsing roadmap data:', error);
+        // Redirect back to form if data is corrupted
+        navigate('/information');
+      }
+    } else {
+      // No data available, redirect back to form
+      navigate('/information');
+    }
+    setLoading(false);
+  }, [navigate]);
+
+  if (loading) {
+    return (
+      <div className="font-blmelody bg-white text-gray-900 min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-lime-600 mx-auto mb-4"></div>
+          <p>Loading your roadmap...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!roadmapData) {
+    return (
+      <div className="font-blmelody bg-white text-gray-900 min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <p>No roadmap data available. Please generate a new roadmap.</p>
+          <button 
+            onClick={() => navigate('/information')}
+            className="mt-4 bg-lime-500 hover:bg-lime-600 text-white px-6 py-2 rounded-md"
+          >
+            Generate Roadmap
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  const { recommendations } = roadmapData;
+  const topUniversity = recommendations.recommendations?.[0];
 
   return (
     <div className="font-blmelody bg-white text-gray-900 min-h-screen">
@@ -20,6 +80,42 @@ export default function RoadMap() {
             <p className="mt-6 text-[18px] sm:text-xl leading-6 sm:leading-7 tracking-[-0.02em] text-black">
               Click on each Checkpoint for more details.
             </p>
+            {/* Verification Summary */}
+            {recommendations.verification_summary && (
+              <div className="mt-6 p-4 bg-lime-50 border border-lime-200 rounded-lg">
+                <p className="text-sm text-lime-800">
+                  <strong>AI-Verified Results:</strong> Found {recommendations.verification_summary.total_verified} recommendations
+                  {recommendations.verification_summary.high_confidence_count > 0 && 
+                    ` (${recommendations.verification_summary.high_confidence_count} high-confidence matches)`
+                  }
+                </p>
+                <p className="text-xs text-lime-600 mt-1">
+                  Source: {recommendations.source.replace('_', ' ')}
+                </p>
+              </div>
+            )}
+
+            {/* Accommodations Needed */}
+            {recommendations.needed_accommodations && recommendations.needed_accommodations.length > 0 && (
+              <div className="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                <h3 className="font-semibold text-blue-900 mb-2">Recommended Accommodations:</h3>
+                <ul className="text-sm text-blue-800">
+                  {recommendations.needed_accommodations.slice(0, 4).map((accommodation, index) => (
+                    <li key={index} className="flex items-center mb-1">
+                      <span className="w-2 h-2 bg-blue-400 rounded-full mr-2"></span>
+                      {accommodation}
+                    </li>
+                  ))}
+                  {recommendations.needed_accommodations.length > 4 && (
+                    <li className="text-blue-600 text-xs">
+                      +{recommendations.needed_accommodations.length - 4} more...
+                    </li>
+                  )}
+                </ul>
+              </div>
+            )}
+  
+
             <div className="mt-10 inline-flex items-center justify-between w-full sm:w-auto gap-4 rounded-[15px] px-5 py-3 text-[18px] sm:text-xl tracking-[-0.02em] ring-1 ring-gray-200 hover:ring-gray-300 transition">
               See my other university recommendations
               <button
