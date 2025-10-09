@@ -66,6 +66,12 @@ export default function UserInput() {
           so we can build your custom university admissions roadmap.
         </p>
 
+        {error && (
+          <div className="mb-4 p-4 bg-red-50 border border-red-200 rounded-md">
+            <p className="text-red-800">{error}</p>
+          </div>
+        )}
+
         <form
           onSubmit={handleSubmit}
           className="space-y-6 bg-white p-8 rounded shadow"
@@ -284,15 +290,12 @@ export default function UserInput() {
           
 
 
-  <button
+          <button
             type="submit"
-            className="w-full bg-lime-500 hover:bg-lime-600 text-white font-semibold py-2 px-4 rounded-md transition"
+            disabled={loading}
+            className="w-full bg-lime-500 hover:bg-lime-600 disabled:bg-gray-400 text-white font-semibold py-2 px-4 rounded-md transition"
           >
-
-
-
-
-            Generate Roadmap
+            {loading ? 'Generating Roadmap...' : 'Generate Roadmap'}
           </button>
         </form>
       </section>
