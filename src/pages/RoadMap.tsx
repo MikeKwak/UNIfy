@@ -62,7 +62,6 @@ export default function RoadMap() {
   }
 
   const { recommendations } = roadmapData;
-  const topUniversity = recommendations.recommendations?.[0];
 
   return (
     <div className="font-blmelody bg-white text-gray-900 min-h-screen">
@@ -85,8 +84,8 @@ export default function RoadMap() {
               <div className="mt-6 p-4 bg-lime-50 border border-lime-200 rounded-lg">
                 <p className="text-sm text-lime-800">
                   <strong>AI-Verified Results:</strong> Found {recommendations.verification_summary.total_verified} recommendations
-                  {recommendations.verification_summary.high_confidence_count > 0 && 
-                    ` (${recommendations.verification_summary.high_confidence_count} high-confidence matches)`
+                  {recommendations.verification_summary.overlap_count > 0 && 
+                    ` (${recommendations.verification_summary.overlap_count} verified matches)`
                   }
                 </p>
                 <p className="text-xs text-lime-600 mt-1">
