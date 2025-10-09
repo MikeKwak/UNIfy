@@ -60,6 +60,12 @@ export default function UserInput() {
 
       {/* Form Section */}
       <section className="pt-32 pb-16 px-4 max-w-3xl mx-auto">
+        {/* Error Message */}
+        {error && (
+          <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
+            <p className="text-red-800">{error}</p>
+          </div>
+        )}
         <h2 className="text-3xl mb-2">Let’s personalize your journey.</h2>
         <p className="mb-8 text-gray-600">
           Tell us a bit about your academic background and accessibility needs
@@ -293,7 +299,7 @@ export default function UserInput() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-lime-500 hover:bg-lime-600 disabled:bg-gray-400 text-white font-semibold py-2 px-4 rounded-md transition"
+            className="w-full bg-lime-500 hover:bg-lime-600 disabled:bg-gray-400 disabled:cursor-not-allowed text-white font-semibold py-2 px-4 rounded-md transition"
           >
             {loading ? 'Generating Roadmap...' : 'Generate Roadmap'}
           </button>

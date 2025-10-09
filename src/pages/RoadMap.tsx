@@ -85,7 +85,7 @@ export default function RoadMap() {
                 <p className="text-sm text-lime-800">
                   <strong>AI-Verified Results:</strong> Found {recommendations.verification_summary.total_verified} recommendations
                   {recommendations.verification_summary.overlap_count > 0 && 
-                    ` (${recommendations.verification_summary.overlap_count} verified matches)`
+                    ` (${recommendations.verification_summary.overlap_count} high-confidence matches)`
                   }
                 </p>
                 <p className="text-xs text-lime-600 mt-1">
