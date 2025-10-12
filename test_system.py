@@ -11,7 +11,7 @@ from typing import Dict, List
 
 def test_ml_pipeline():
     """Test the ML pipeline functionality."""
-    print("🧪 Testing ML Pipeline...")
+    print("Testing ML Pipeline...")
 
     try:
         from ml_pipeline import UNIfyMLPipeline
@@ -37,7 +37,7 @@ def test_ml_pipeline():
         pipeline.encode_categorical_features()
         print("Feature encoding completed")
 
-        print("\n🎉 ML Pipeline test completed successfully!")
+        print("\n ML Pipeline test completed successfully!")
         return True
 
     except Exception as e:
@@ -47,7 +47,7 @@ def test_ml_pipeline():
 
 def test_recommendation_system():
     """Test the recommendation system with sample data."""
-    print("\n🧪 Testing Recommendation System...")
+    print("\n Testing Recommendation System...")
 
     try:
         from ml_pipeline import UNIfyMLPipeline
