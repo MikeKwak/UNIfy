@@ -2,7 +2,7 @@
  * API service for UNIfy Flask backend integration
  */
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5001';
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 
 export interface StudentProfile {
   mental_health: string;
