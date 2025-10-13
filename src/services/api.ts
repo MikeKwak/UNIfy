@@ -1,31 +1,20 @@
-// API Service for UNIfy Backend Integration 
-const API_BASE_URL = 'http://127.0.0.1:5000'; // Flask server
+/**
+ * API service for UNIfy Flask backend integration
+ */
+
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5001';
 
 export interface StudentProfile {
   mental_health: string;
   physical_health: string;
   courses: string;
   gpa: number;
-  severity: string;
-}
-
-export interface RecommendationResult {
-  success: boolean;
-  source: string;
-  needed_accommodations: string[];
-  recommendations: University[];
-  verification_summary?: {
-    ml_count: number;
-    ai_count: number;
-    overlap_count: number;
-    total_verified: number;
-  };
+  severity: 'mild' | 'moderate' | 'severe';
 }
 
 export interface University {
   name: string;
   score: number;
-  confidence?: string;
   accessibility_rating: number;
   disability_support_rating: number;
   available_accommodations: string[];
@@ -33,70 +22,109 @@ export interface University {
   reason: string;
 }
 
-// Step 1: Get initial ML-based recommendations from your database
-export const getInitialRecommendations = async (studentProfile: StudentProfile): Promise<RecommendationResult> => {
+export interface RecommendationResponse {
+  success: boolean;
+  source: string;
+  needed_accommodations: string[];
+  recommendations: University[];
+  error?: {
+    code: string;
+    message: string;
+  };
+}
+
+/**
+ * Get university recommendations from the Flask API
+ */
+export async function getRecommendations(profile: StudentProfile): Promise<RecommendationResponse> {
   try {
+    console.log('API Base URL:', API_BASE_URL);
+    console.log('Sending profile:', profile);
+
     const response = await fetch(`${API_BASE_URL}/api/recommendations`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify(studentProfile),
+      body: JSON.stringify(profile),
     });
-    
+
     if (!response.ok) {
-      throw new Error(`Failed to get initial recommendations: ${response.statusText}`);
+      const errorData = await response.json();
+      throw new Error(errorData.error?.message || `HTTP ${response.status}`);
     }
-    
+
     return await response.json();
   } catch (error) {
-    console.error('Error getting initial recommendations:', error);
+    console.error('API Error:', error);
     throw error;
   }
-};
+}
 
-// Step 2: Verify results with LLM (Gemini AI)
-export const verifyWithLLM = async (
-  studentProfile: StudentProfile, 
-  initialResults: RecommendationResult
-): Promise<RecommendationResult> => {
+/**
+ * Test the API connection
+ */
+export async function testAPI(): Promise<any> {
   try {
-    const response = await fetch(`${API_BASE_URL}/api/recommendations/verify`, {
+    const response = await fetch(`${API_BASE_URL}/api/test`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}`);
+    }
+
+    return await response.json();
+  } catch (error) {
+    console.error('API Test Error:', error);
+    throw error;
+  }
+}
+
+/**
+ * Get recommendations directly from Gemini AI
+ */
+export async function getGeminiRecommendations(profile: StudentProfile): Promise<RecommendationResponse> {
+  try {
+    const response = await fetch(`${API_BASE_URL}/api/gemini`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({
-        ...studentProfile,
-        initial_results: initialResults
-      }),
+      body: JSON.stringify(profile),
     });
-    
+
     if (!response.ok) {
-      throw new Error(`Failed to verify with LLM: ${response.statusText}`);
+      const errorData = await response.json();
+      throw new Error(errorData.error?.message || `HTTP ${response.status}`);
     }
-    
+
     return await response.json();
   } catch (error) {
-    console.error('Error verifying with LLM:', error);
+    console.error('Gemini API Error:', error);
     throw error;
   }
-};
+}
 
-// Combined function that does both steps
-export const generateRoadmapRecommendations = async (studentProfile: StudentProfile): Promise<RecommendationResult> => {
+/**
+ * Check API health
+ */
+export async function checkHealth(): Promise<any> {
   try {
-    // Step 1: Get initial ML recommendations from database
-    console.log('Step 1: Getting initial ML recommendations...');
-    const initialResults = await getInitialRecommendations(studentProfile);
-    
-    // Step 2: Verify and enhance with LLM
-    console.log('Step 2: Verifying with LLM...');
-    const verifiedResults = await verifyWithLLM(studentProfile, initialResults);
-    
-    return verifiedResults;
+    const response = await fetch(`${API_BASE_URL}/`, {
+      method: 'GET',
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}`);
+    }
+
+    return await response.json();
   } catch (error) {
-    console.error('Error in roadmap generation:', error);
+    console.error('Health Check Error:', error);
     throw error;
   }
-};
+}

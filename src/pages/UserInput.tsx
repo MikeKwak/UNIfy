@@ -1,57 +1,48 @@
-import { type FormEvent } from "react";
+import { type FormEvent, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import NavBar from "../components/NavBar";
-import { useState } from "react"; 
-import { generateRoadmapRecommendations, type StudentProfile } from "../services/api";
-
+import { getRecommendations, type StudentProfile } from "../services/api";
 
 export default function UserInput() {
   const navigate = useNavigate();
-  const [loading, setLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-
-
-  //function handleSubmit(e: FormEvent<HTMLFormElement>) {
-  //  e.preventDefault();
-  //  // Add validation later
-
-  //  navigate("/roadmap");
-  //}
 
   async function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    setLoading(true);
+    setIsLoading(true);
     setError(null);
-  
+
     try {
       const formData = new FormData(e.currentTarget);
-      
-      const studentProfile: StudentProfile = {
-        mental_health: formData.get('disability') as string || 'None',
-        physical_health: formData.get('disability-type') === 'Physical' ? 'Mobility' : 'None',
-        courses: formData.get('program') as string || 'General Studies',
-        gpa: parseFloat(formData.get('gpa') as string) || 3.0,
-        severity: 'moderate'
+
+      // Create student profile from form data
+      const profile: StudentProfile = {
+        mental_health: formData.get('mental-health')?.toString() || 'None',
+        physical_health: formData.get('physical-health')?.toString() || 'None',
+        courses: formData.get('courses')?.toString() || 'General',
+        gpa: parseFloat(formData.get('gpa')?.toString() || '3.0'),
+        severity: (formData.get('severity')?.toString() as 'mild' | 'moderate' | 'severe') || 'moderate'
       };
-  
-      // Step 1: DB verification, Step 2: LLM verification
-      const recommendations = await generateRoadmapRecommendations(studentProfile);
-      
-      sessionStorage.setItem('roadmapData', JSON.stringify({
-        studentProfile,
-        recommendations
-      }));
 
-      navigate("/roadmap");
-    
-  } catch (err) {
-    setError('Failed to generate roadmap. Please try again.');
-  } finally {
-    setLoading(false);
+      console.log('Form submitted with profile:', profile);
+
+      // Get recommendations from API
+      const result = await getRecommendations(profile);
+
+      // Store recommendations in sessionStorage for the recommendations page
+      sessionStorage.setItem('recommendations', JSON.stringify(result));
+      sessionStorage.setItem('studentProfile', JSON.stringify(profile));
+
+      // Navigate to recommendations page
+      navigate("/recommendations");
+
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'An error occurred');
+    } finally {
+      setIsLoading(false);
+    }
   }
-}
-
-
 
   return (
     <div className="font-blmelody bg-white text-gray-900 min-h-screen">
@@ -145,48 +136,38 @@ export default function UserInput() {
               step="0.1"
               max={4.0}
               min={0.0}
+              required
               className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-lime-500 focus:border-lime-500"
             />
           </div>
 
-          {/* Completed High School Courses */}
+          {/* Program of Interest */}
           <div>
             <label
-              htmlFor="courses"
+              htmlFor="program"
               className="block text-sm font-medium mb-1 text-lime-600"
             >
-              Completed High School Courses
+              Program of Interest
             </label>
-            <div className="space-y-3">
-              <select
-                id="courses"
-                name="courses"
-                className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-lime-500 focus:border-lime-500"
-              >
-                <option value="">Select a course</option>
-                <option value="Biology">Biology</option>
-                <option value="Calculus">Calculus</option>
-                <option value="English">English</option>
-                <option value="Physics">Physics</option>
-              </select>
-
-              <button type="button" className="text-sm hover:underline">
-                + Add more
-              </button>
-            </div>
+            <input
+              id="program"
+              name="program"
+              className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-lime-500 focus:border-lime-500"
+            />
           </div>
 
-          {/* University & Program Preference + Add more */}
+
+          {/* University Preference */}
           <div>
             <label className="block text-sm font-medium mb-2 text-lime-600">
-              University & Program Preference
+              University Preference
             </label>
             <select
               id="preference"
               name="preference"
               className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-lime-500 focus:border-lime-500"
             >
-              <option value="">Select a program</option>
+              <option value="">Select a university</option>
             </select>
           </div>
 
@@ -239,69 +220,122 @@ export default function UserInput() {
             />
           </div>
 
-          {/* Disability Type */}
+          {/* Mental Health Condition */}
+          <div>
+            <label
+              htmlFor="mental-health"
+              className="block text-sm font-medium mb-1 text-lime-600"
+            >
+              Mental Health Condition
+            </label>
+            <select
+              id="mental-health"
+              name="mental-health"
+              className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-lime-500 focus:border-lime-500"
+            >
+              <option value="None">None</option>
+              <option value="ADHD">ADHD</option>
+              <option value="Anxiety">Anxiety</option>
+              <option value="Depression">Depression</option>
+              <option value="Autism">Autism Spectrum Disorder</option>
+              <option value="Learning Disability">Learning Disability</option>
+              <option value="Other">Other</option>
+            </select>
+          </div>
+
+          {/* Physical Health Condition */}
+          <div>
+            <label
+              htmlFor="physical-health"
+              className="block text-sm font-medium mb-1 text-lime-600"
+            >
+              Physical Health Condition
+            </label>
+            <select
+              id="physical-health"
+              name="physical-health"
+              className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-lime-500 focus:border-lime-500"
+            >
+              <option value="None">None</option>
+              <option value="Mobility Impairment">Mobility Impairment</option>
+              <option value="Visual Impairment">Visual Impairment</option>
+              <option value="Hearing Impairment">Hearing Impairment</option>
+              <option value="Chronic Illness">Chronic Illness</option>
+              <option value="Other">Other</option>
+            </select>
+          </div>
+
+          {/* Severity Level */}
           <fieldset>
             <legend className="block text-sm font-medium mb-1 text-lime-600">
-              Disability Type
+              Severity Level
             </legend>
             <div className="flex flex-wrap gap-6">
               <label className="inline-flex items-center gap-2">
-                <input type="radio" name="disability-type" value="Mental" />
-                Mental
+                <input type="radio" name="severity" value="mild" required />
+                Mild
               </label>
               <label className="inline-flex items-center gap-2">
-                <input type="radio" name="disability-type" value="Physical" />
-                Physical
+                <input type="radio" name="severity" value="moderate" required />
+                Moderate
               </label>
               <label className="inline-flex items-center gap-2">
-                <input type="radio" name="disability-type" value="Both" />
-                Both
+                <input type="radio" name="severity" value="severe" required />
+                Severe
               </label>
             </div>
           </fieldset>
 
-          {/* Disability */}
+          {/* Program of Interest */}
           <div>
             <label
-              htmlFor="disability"
+              htmlFor="program-interest"
               className="block text-sm font-medium mb-1 text-lime-600"
             >
-              Disability
+              Program of Interest
             </label>
             <select
-              id="disability"
-              name="disability"
+              id="program-interest"
+              name="courses"
+              required
               className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-lime-500 focus:border-lime-500"
             >
-              <option value="">Select an option</option>
+              <option value="">Select a program</option>
+              <option value="Computer Science">Computer Science</option>
+              <option value="Engineering">Engineering</option>
+              <option value="Business">Business</option>
+              <option value="Psychology">Psychology</option>
+              <option value="Biology">Biology</option>
+              <option value="Medicine">Medicine</option>
+              <option value="Arts">Arts</option>
+              <option value="Education">Education</option>
+              <option value="Other">Other</option>
             </select>
           </div>
 
-          {/* Program Interests */}
-          <div>
-            <label
-              htmlFor="program"
-              className="block text-sm font-medium mb-1 text-lime-600"
-            >
-              Program Interests
-            </label>
-            <input
-              id="program"
-              name="program"
-              placeholder="e.g., Engineering, Psychology"
-              className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-lime-500 focus:border-lime-500"
-            />
-          </div>
+          {/* Error Display */}
+          {error && (
+            <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-md">
+              {error}
+            </div>
+          )}
 
-          
+          {/* Loading State */}
+          {isLoading && (
+            <div className="bg-blue-50 border border-blue-200 text-blue-700 px-4 py-3 rounded-md">
+              Getting your personalized recommendations...
+            </div>
+          )}
+
+
 
 
           <button
             type="submit"
-            disabled={loading}
+            disabled={isLoading}
             className="w-full bg-lime-500 hover:bg-lime-600 disabled:bg-gray-400 disabled:cursor-not-allowed text-white font-semibold py-2 px-4 rounded-md transition"
           >
-            {loading ? 'Generating Roadmap...' : 'Generate Roadmap'}
+            {isLoading ? "Getting Recommendations..." : "Get Recommendations"}
           </button>
         </form>
       </section>

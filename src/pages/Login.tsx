@@ -10,7 +10,7 @@ export default function Login() {
     // Can add validation later
     navigate("/information");
   };
-  
+
   return (
     <div className="bg-gray-100 flex items-center justify-center min-h-screen">
       {/* Navbar */}
