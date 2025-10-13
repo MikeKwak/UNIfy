@@ -7,6 +7,7 @@ import Recommendations from "../pages/Recommendations";
 import Eligibility from "../pages/Eligibility";
 import RequiredDocs from "../pages/RequiredDocs";
 import Submission from "../pages/Submissions";
+import Signup from "../pages/signup";
 
 export default function App() {
   return (
@@ -17,6 +18,7 @@ export default function App() {
       <Route path="/roadmap" element={<RoadMap />} />
       <Route path="/recommendations" element={<Recommendations />} />
       <Route path="/eligibility" element={<Eligibility />} />
+      <Route path="/signup" element={<Signup />} />
       <Route path="/required" element={<RequiredDocs />} />
       <Route path="/submission" element={<Submission />} />
     </Routes>

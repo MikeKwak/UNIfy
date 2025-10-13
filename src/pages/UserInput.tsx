@@ -129,19 +129,33 @@ export default function UserInput() {
             />
           </div>
 
-          {/* Removed old courses field - using Program of Interest instead */}
+          {/* Program of Interest */}
+          <div>
+            <label
+              htmlFor="program"
+              className="block text-sm font-medium mb-1 text-lime-600"
+            >
+              Program of Interest
+            </label>
+            <input
+              id="program"
+              name="program"
+              className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-lime-500 focus:border-lime-500"
+            />
+          </div>
 
-          {/* University & Program Preference + Add more */}
+
+          {/* University Preference */}
           <div>
             <label className="block text-sm font-medium mb-2 text-lime-600">
-              University & Program Preference
+              University Preference
             </label>
             <select
               id="preference"
               name="preference"
               className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-lime-500 focus:border-lime-500"
             >
-              <option value="">Select a program</option>
+              <option value="">Select a university</option>
             </select>
           </div>
 

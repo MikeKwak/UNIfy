@@ -2,6 +2,7 @@ import { Link, useNavigate } from "react-router-dom";
 import NavBar from "../components/NavBar";
 import type { FormEvent } from "react";
 
+
 export default function Login() {
   const navigate = useNavigate();
 
@@ -10,7 +11,7 @@ export default function Login() {
     // Can add validation later
     navigate("/information");
   };
-  
+
   return (
     <div className="bg-gray-100 flex items-center justify-center min-h-screen">
       {/* Navbar */}
@@ -70,10 +71,21 @@ export default function Login() {
           </button>
 
           {/* Optional links */}
-          <div className="text-center mt-4">
+          <div className="text-center mt-0 mb-0">
             <a href="#" className="text-sm text-lime-600 hover:underline">
               Forgot password?
             </a>
+          </div>
+
+          {/* SIGN UP */}
+          <div className="text-center mt-4 flex items-center justify-center gap-2">
+            <p className="text-gray-700 text-sm mb-0">Don't have an account yet?</p>
+            <Link
+              to="/signup"
+              className="text-sm text-lime-600 hover:underline font-normal"
+            >
+              Sign Up
+            </Link>
           </div>
         </form>
       </div>
