@@ -133,7 +133,7 @@ if __name__ == "__main__":
     # Test API endpoints
     test_flask_api()
 
-    print("\n🎉 All tests completed!")
+    print("\nAll tests completed!")
     print("\nNext steps:")
     print("1. Start the Flask server: python app.py")
     print("2. Start the React dev server: npm run dev")
