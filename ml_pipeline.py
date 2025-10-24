@@ -27,6 +27,14 @@ except ImportError:
     GEMINI_AVAILABLE = False
     print("Warning: Gemini AI not available. Install google-generativeai package for AI fallback.")
 
+# Import HMM + Viterbi processor
+try:
+    from hmm_processor import get_hmm_enhanced_recommendations, StudentJourneyHMM
+    HMM_AVAILABLE = True
+except ImportError:
+    HMM_AVAILABLE = False
+    print("Warning: HMM processor not available. Install hmmlearn package for journey modeling.")
+
 class UNIfyMLPipeline:
     def __init__(self, data_dir: str = "data/clean"):
         """
@@ -690,11 +698,29 @@ def get_recommendations(student_profile: Dict) -> Dict:
             except Exception as e:
                 print(f"Final Gemini AI fallback failed: {e}")
         
+        # Add HMM + Viterbi analysis if available
+        hmm_analysis = None
+        if HMM_AVAILABLE:
+            try:
+                hmm_result = get_hmm_enhanced_recommendations(student_profile)
+                if hmm_result['success']:
+                    hmm_analysis = {
+                        'journey_path': hmm_result['viterbi_analysis']['optimal_path'],
+                        'path_confidence': hmm_result['viterbi_analysis']['path_confidence'],
+                        'overall_recommendation': hmm_result['viterbi_analysis']['recommendation'],
+                        'stages': hmm_result['journey_map']['stages'],
+                        'accommodation_progression': hmm_result['accommodation_progression']
+                    }
+                    print(f"✅ HMM + Viterbi analysis added (confidence: {hmm_analysis['path_confidence']:.2%})")
+            except Exception as e:
+                print(f"HMM analysis failed: {e}")
+        
         return {
             'success': True,
             'source': 'ml_pipeline',
             'needed_accommodations': ['Extended time', 'Quiet environment', 'Academic coaching'],  # Placeholder
-            'recommendations': formatted_recommendations
+            'recommendations': formatted_recommendations,
+            'hmm_analysis': hmm_analysis  # Additional journey mapping via HMM + Viterbi
         }
         
     except Exception as e:
