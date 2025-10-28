@@ -10,6 +10,7 @@ import os
 import logging
 from typing import Dict, Any
 from dotenv import load_dotenv
+from auth import require_auth, get_current_user
 # Import Gemini lazily to avoid blocking server startup
 # from gemini_recommender import get_gemini_recommendations
 
@@ -140,7 +141,7 @@ def get_mock_recommendations(student_profile: Dict[str, Any]) -> Dict[str, Any]:
 # Initialize Flask app
 app = Flask(__name__)
 FRONTEND_ORIGINS = os.environ.get(
-    "FRONTEND_ORIGINS", "http://localhost:5173,http://localhost:3000")
+    "FRONTEND_ORIGINS", "http://localhost:5173,http://localhost:3000,https://*.amplifyapp.com")
 CORS(app, resources={r"/api/*": {"origins": FRONTEND_ORIGINS.split(",")}})
 
 # Configuration
@@ -163,6 +164,7 @@ def health_check():
 
 
 @app.route('/api/recommendations', methods=['POST'])
+@require_auth
 def get_university_recommendations():
     """
     Main API endpoint for getting university recommendations.
@@ -212,7 +214,9 @@ def get_university_recommendations():
             'severity': str(data['severity'])
         }
 
-        logger.info(f"Processing recommendation request for: {student_profile}")
+        # Get current user info
+        user = get_current_user()
+        logger.info(f"Processing recommendation request for user {user.get('email', 'unknown')}: {student_profile}")
 
         # Get recommendations (Gemini AI with fallback)
         print("=" * 60)
@@ -261,6 +265,7 @@ def test_recommendations():
 
 
 @app.route('/api/gemini', methods=['POST'])
+@require_auth
 def get_gemini_recommendations_endpoint():
     """
     Direct Gemini AI endpoint for testing.
@@ -288,7 +293,9 @@ def get_gemini_recommendations_endpoint():
             'severity': str(data['severity'])
         }
 
-        logger.info(f"Processing Gemini AI request for: {student_profile}")
+        # Get current user info
+        user = get_current_user()
+        logger.info(f"Processing Gemini AI request for user {user.get('email', 'unknown')}: {student_profile}")
 
         # Get recommendations directly from Gemini AI (lazy import)
         try:
@@ -334,8 +341,8 @@ def create_app():
 
 if __name__ == '__main__':
     # Get configuration from environment variables
-    host = os.getenv('FLASK_HOST', '127.0.0.1')
-    port = int(os.getenv('FLASK_PORT', 5000))
+    host = os.getenv('FLASK_HOST', '0.0.0.0')
+    port = int(os.getenv('FLASK_PORT', 8000))
     debug = os.getenv('FLASK_DEBUG', 'False').lower() == 'true'
 
     logger.info(f"Starting UNIfy API server on {host}:{port}")

@@ -1,9 +1,21 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
+import { useAuth } from "../contexts/AuthContext";
 import AccessibilityMenu from "./AccessibilityMenu";
 
 export default function NavBar() {
   const [open, setOpen] = useState(false);
+  const { isAuthenticated, user, signOut } = useAuth();
+  const navigate = useNavigate();
+
+  const handleLogout = async () => {
+    try {
+      await signOut();
+      navigate("/");
+    } catch (error) {
+      console.error("Logout error:", error);
+    }
+  };
 
   return (
     <>
@@ -36,6 +48,38 @@ export default function NavBar() {
                 </Link>
               </li>
             </ul>
+
+            {/* Auth Section */}
+            <div className="flex items-center space-x-4">
+              {isAuthenticated ? (
+                <div className="flex items-center space-x-4">
+                  <span className="text-sm text-gray-600">
+                    Welcome, {user?.email || user?.username}
+                  </span>
+                  <button
+                    onClick={handleLogout}
+                    className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-md text-sm font-medium transition"
+                  >
+                    Logout
+                  </button>
+                </div>
+              ) : (
+                <div className="flex items-center space-x-4">
+                  <Link
+                    to="/login"
+                    className="text-sm font-medium text-gray-700 hover:text-gray-500"
+                  >
+                    Login
+                  </Link>
+                  <Link
+                    to="/signup"
+                    className="bg-lime-500 hover:bg-lime-600 text-white px-4 py-2 rounded-md text-sm font-medium transition"
+                  >
+                    Sign Up
+                  </Link>
+                </div>
+              )}
+            </div>
 
             {/* Hamburger Menu */}
             <div className="cursor-pointer" onClick={() => setOpen(!open)}>

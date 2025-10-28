@@ -1,14 +1,40 @@
-import { useNavigate } from "react-router-dom";
+import { useState } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
 import NavBar from "../components/NavBar";
+import { useAuth } from "../contexts/AuthContext";
 import type { FormEvent } from "react";
 
 export default function Login() {
   const navigate = useNavigate();
+  const location = useLocation();
+  const { signIn } = useAuth();
+  const [formData, setFormData] = useState({
+    email: "",
+    password: "",
+  });
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
 
-  const handleSubmit = (e: FormEvent) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
-    // Can add validation later
-    navigate("/information");
+    setError("");
+    setLoading(true);
+
+    try {
+      await signIn(formData.email, formData.password);
+      // Redirect to the page they were trying to access, or default to information
+      const from = location.state?.from?.pathname || "/information";
+      navigate(from, { replace: true });
+    } catch (error: any) {
+      console.error("Login error:", error);
+      setError(error.message || "An error occurred during login");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -27,6 +53,13 @@ export default function Login() {
 
         {/* Login Form */}
         <form className="space-y-6" onSubmit={handleSubmit}>
+          {/* Error Message */}
+          {error && (
+            <div className="bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-md">
+              {error}
+            </div>
+          )}
+
           {/* Email */}
           <div>
             <label
@@ -40,6 +73,8 @@ export default function Login() {
               id="email"
               name="email"
               required
+              value={formData.email}
+              onChange={handleChange}
               className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-lime-500 focus:border-lime-500"
             />
           </div>
@@ -57,6 +92,8 @@ export default function Login() {
               id="password"
               name="password"
               required
+              value={formData.password}
+              onChange={handleChange}
               className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-lime-500 focus:border-lime-500"
             />
           </div>
@@ -64,9 +101,10 @@ export default function Login() {
           {/* Submit Button */}
           <button
             type="submit"
-            className="w-full bg-lime-500 hover:bg-lime-600 text-white font-semibold py-2 px-4 rounded-md transition"
+            disabled={loading}
+            className="w-full bg-lime-500 hover:bg-lime-600 disabled:bg-gray-400 text-white font-semibold py-2 px-4 rounded-md transition"
           >
-            Log In
+            {loading ? "Signing In..." : "Log In"}
           </button>
 
           {/* Optional links */}
