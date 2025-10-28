@@ -5,7 +5,7 @@ Provides REST API endpoints for the React frontend to access ML/AI recommendatio
 
 from gemini_recommender import get_gemini_recommendations
 from ml_pipeline import get_recommendations
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, Response
 from flask_cors import CORS
 import os
 import logging
@@ -46,9 +46,12 @@ def error_response(message: str, status: int = 400, code: str = "BAD_REQUEST"):
 
 # Initialize Flask app
 app = Flask(__name__)
-FRONTEND_ORIGINS = os.environ.get(
-    "FRONTEND_ORIGINS", "http://localhost:5173,http://localhost:3000")
-CORS(app, resources={r"/api/*": {"origins": FRONTEND_ORIGINS.split(",")}})
+# For production, restrict CORS to your real frontend domain
+PROD_FRONTEND_ORIGIN = os.environ.get("PROD_FRONTEND_ORIGIN", "https://your-production-frontend.com")
+if os.environ.get("FLASK_ENV") == "production":
+    CORS(app, resources={r"/*": {"origins": PROD_FRONTEND_ORIGIN}}, supports_credentials=True)
+else:
+    CORS(app, resources={r"/*": {"origins": "*"}}, supports_credentials=True)
 
 # Configuration
 app.config['JSON_SORT_KEYS'] = False
@@ -204,6 +207,41 @@ def get_gemini_recommendations_endpoint():
 
     except Exception as e:
         logger.error(f"Error in Gemini endpoint: {str(e)}")
+        return error_response("Internal server error", 500, "INTERNAL_ERROR")
+
+
+@app.route('/api/roadmap', methods=['POST'])
+def generate_roadmap_svg():
+    """
+    Generate a dynamic roadmap SVG based on user/session data.
+    Expects JSON payload with relevant roadmap info.
+    Returns SVG as image/svg+xml.
+    """
+    try:
+        if not request.is_json:
+            return error_response("Request must be JSON", 400, "NOT_JSON")
+        data = request.get_json()
+        # Example: use university name and steps from payload
+        university = data.get('university', 'Your University')
+        steps = data.get('steps', [
+            'Eligibility & Prerequisites',
+            'Required Documents',
+            'Application Submission',
+            'Decision & Next Steps'
+        ])
+        # Simple SVG generation (customize as needed)
+        svg = f'''<svg width="600" height="200" xmlns="http://www.w3.org/2000/svg">
+            <rect width="100%" height="100%" fill="#F7FEE7" />
+            <text x="50%" y="40" text-anchor="middle" font-size="28" fill="#92BD3A">Roadmap for {university}</text>
+            '''
+        for i, step in enumerate(steps):
+            y = 80 + i * 30
+            svg += f'<circle cx="60" cy="{y}" r="12" fill="#92BD3A" />'
+            svg += f'<text x="90" y="{y+5}" font-size="18" fill="#333">{step}</text>'
+        svg += '</svg>'
+        return Response(svg, mimetype='image/svg+xml')
+    except Exception as e:
+        logger.error(f"Error in roadmap endpoint: {str(e)}")
         return error_response("Internal server error", 500, "INTERNAL_ERROR")
 
 
