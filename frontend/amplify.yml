@@ -4,15 +4,17 @@ frontend:
     preBuild:
       commands:
         - echo "Installing frontend dependencies..."
+        - cd frontend
         - npm install
     build:
       commands:
         - echo "Building frontend application..."
+        - cd frontend
         - npm run build
   artifacts:
-    baseDirectory: dist
+    baseDirectory: frontend/dist
     files:
       - '**/*'
   cache:
     paths:
-      - node_modules/**/*
+      - frontend/node_modules/**/*
