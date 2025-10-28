@@ -11,9 +11,9 @@ from flask import request, jsonify
 from typing import Dict, Any, Optional
 
 # AWS Cognito configuration
-AWS_REGION = os.environ.get('AWS_REGION', 'us-east-1')
-AWS_USER_POOL_ID = os.environ.get('AWS_USER_POOL_ID', '')
-AWS_USER_POOL_CLIENT_ID = os.environ.get('AWS_USER_POOL_CLIENT_ID', '')
+AWS_REGION = os.environ.get('COGNITO_REGION', 'us-east-1')
+AWS_USER_POOL_ID = os.environ.get('COGNITO_USER_POOL_ID', '')
+AWS_USER_POOL_CLIENT_ID = os.environ.get('COGNITO_USER_POOL_CLIENT_ID', '')
 
 # Cache for JWKS (JSON Web Key Set)
 _jwks_cache = None
