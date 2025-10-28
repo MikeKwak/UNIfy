@@ -1,15 +1,20 @@
 version: 1
-backend:
+frontend:
   phases:
-    build:
+    preBuild:
       commands:
         - echo "Installing backend dependencies..."
         - pip install -r requirements.txt
         - echo "Backend dependencies installed"
-        - echo "Starting Flask application..."
-        - python app.py
+    build:
+      commands:
+        - echo "Building backend for static hosting..."
+        - echo "Backend API is not suitable for Amplify static hosting"
+        - echo "Consider deploying to AWS Lambda or ECS instead"
+        - mkdir -p dist
+        - echo '<html><body><h1>Backend API</h1><p>This backend should be deployed to AWS Lambda or ECS, not Amplify static hosting.</p></body></html>' > dist/index.html
   artifacts:
-    baseDirectory: .
+    baseDirectory: dist
     files:
       - '**/*'
   cache:
