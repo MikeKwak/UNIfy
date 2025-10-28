@@ -1,0 +1,32 @@
+version: 1
+backend:
+  phases:
+    build:
+      commands:
+        - echo "Installing backend dependencies..."
+        - cd backend
+        - pip install -r requirements.txt
+        - echo "Backend dependencies installed"
+  artifacts:
+    baseDirectory: backend
+    files:
+      - '**/*'
+frontend:
+  phases:
+    preBuild:
+      commands:
+        - echo "Installing frontend dependencies..."
+        - cd frontend
+        - npm install
+    build:
+      commands:
+        - echo "Building frontend..."
+        - npm run build
+  artifacts:
+    baseDirectory: frontend/dist
+    files:
+      - '**/*'
+  cache:
+    paths:
+      - frontend/node_modules/**/*
+      - backend/**/*
