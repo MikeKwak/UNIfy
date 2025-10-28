@@ -10,3 +10,6 @@ backend:
     baseDirectory: .
     files:
       - '**/*'
+  cache:
+    paths:
+      - '**/*'
