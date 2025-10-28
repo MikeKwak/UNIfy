@@ -6,6 +6,8 @@ backend:
         - echo "Installing backend dependencies..."
         - pip install -r requirements.txt
         - echo "Backend dependencies installed"
+        - echo "Starting Flask application..."
+        - python app.py
   artifacts:
     baseDirectory: .
     files:
