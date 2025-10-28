@@ -142,7 +142,7 @@ def get_mock_recommendations(student_profile: Dict[str, Any]) -> Dict[str, Any]:
 app = Flask(__name__)
 FRONTEND_ORIGINS = os.environ.get(
     "FRONTEND_ORIGINS", "http://localhost:5173,http://localhost:3000,https://*.amplifyapp.com")
-CORS(app, resources={r"/api/*": {"origins": FRONTEND_ORIGINS.split(",")}})
+CORS(app, resources={r"/*": {"origins": FRONTEND_ORIGINS.split(",")}})
 
 # Configuration
 app.config['JSON_SORT_KEYS'] = False
@@ -342,7 +342,7 @@ def create_app():
 if __name__ == '__main__':
     # Get configuration from environment variables
     host = os.getenv('FLASK_HOST', '0.0.0.0')
-    port = int(os.getenv('FLASK_PORT', 8000))
+    port = int(os.getenv('PORT', os.getenv('FLASK_PORT', 8000)))
     debug = os.getenv('FLASK_DEBUG', 'False').lower() == 'true'
 
     logger.info(f"Starting UNIfy API server on {host}:{port}")
