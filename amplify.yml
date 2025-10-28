@@ -4,10 +4,12 @@ frontend:
     preBuild:
       commands:
         - echo "Installing frontend dependencies..."
+        - nvm use 20
         - cd frontend && npm install
     build:
       commands:
         - echo "Building frontend application..."
+        - nvm use 20
         - cd frontend && npm run build
   artifacts:
     baseDirectory: frontend/dist
