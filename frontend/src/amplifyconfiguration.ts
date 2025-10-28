@@ -27,7 +27,7 @@ const amplifyConfig = {
         username: false,
         phone: false,
       },
-      signUpVerificationMethod: 'code',
+      signUpVerificationMethod: 'code' as const,
     }
   }
 };
