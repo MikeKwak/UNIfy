@@ -1,362 +1,176 @@
-# UNIfy - University Accommodation Recommendation System
+# UNIfy
 
-UNIfy is an intelligent recommendation system that helps students with disabilities find universities that best match their accessibility needs and accommodation requirements. The project combines a machine learning backend with a modern React frontend.
+A university accommodation recommendation system that helps students with disabilities find universities that best match their needs.
 
-## 🎯 Project Overview
-
-The system uses machine learning to:
-- **Predict accommodations** needed based on student disability profiles
-- **Recommend universities** that provide the best match for accessibility needs
-- **Match students** with institutions based on accommodation availability and support ratings
-
-## 🚀 Quick Start
-
-### Prerequisites
-
-- **Node.js** (latest version) - [Download here](https://nodejs.org/en/download/)
-- **Python 3.8+** (for ML backend)
-- **8GB+ RAM** (for TensorFlow training)
-
-### Frontend Setup
-
-1. **Clone the repository**
-   ```bash
-   git clone https://github.com/michelleJeonn/UNIfy.git
-   cd UNIfy
-   ```
-
-2. **Install frontend dependencies**
-   ```bash
-   npm install
-   ```
-
-3. **Run the frontend locally**
-   ```bash
-   npm run dev
-   ```
-
-### Backend Setup (ML Pipeline)
-
-1. **Install Python dependencies**
-   ```bash
-   pip install -r requirements.txt
-   ```
-
-2. **Verify TensorFlow installation**
-   ```bash
-   python -c "import tensorflow as tf; print(f'TensorFlow {tf.__version__} installed successfully')"
-   ```
-
-3. **Train the ML models**
-   ```bash
-   python ml_pipeline.py
-   ```
-
-## 📊 Data Structure
-
-### Cleaned CSV Files
-
-Your cleaned CSV files contain valuable information for building the ML model:
-
-1. **`clean_student_info.csv`** - Student disability profiles and course information
-   - Mental health conditions (ADHD, Autism, Depression, etc.)
-   - Physical health conditions (Hearing, Mobility, Neurological, etc.)
-   - High school courses completed
-
-2. **`clean_uni_info.csv`** - University information and available accommodations
-   - University names and locations
-   - Available accommodations and services
-   - Accessibility and disability support ratings
-
-3. **`clean_user_input.csv`** - Student input data for training
-   - GPA and academic performance
-   - Health condition details
-   - Severity levels and preferences
-
-## 🤖 Machine Learning Pipeline
-
-### 1. Train the Models
-
-Run the complete ML pipeline to train the recommendation system:
-
-```bash
-python ml_pipeline.py
-```
-
-This will:
-- Load and preprocess your cleaned CSV data
-- Create training datasets from student and university information
-- Train a neural network to predict needed accommodations
-- Build a university recommendation system
-- Save trained models to the `models/` directory
-
-### 2. Model Architecture
-
-#### Accommodation Predictor
-- **Input**: Student disability profile, courses, GPA, severity
-- **Output**: Predicted accommodations needed
-- **Architecture**: 4-layer neural network with dropout regularization
-- **Training**: Binary cross-entropy loss for multi-label classification
-
-#### University Recommender
-- **Input**: University features and accommodation availability
-- **Output**: Match scores for student-university pairs
-- **Scoring**: Combines accessibility ratings (70%) with accommodation match (30%)
-
-### 3. Data Processing
-
-The pipeline automatically:
-- Encodes categorical variables (disabilities, courses, accommodations)
-- Scales numerical features (GPA, ratings)
-- Handles missing data and data inconsistencies
-- Creates synthetic training data when needed
-
-## 🔌 Frontend Integration API
-
-### 1. Main API Function
-
-The system provides a simple API function for frontend integration:
-
-```python
-from ml_pipeline import get_recommendations
-
-# Student profile input
-student_profile = {
-    'mental_health': 'ADHD',
-    'physical_health': 'None',
-    'courses': 'Computer Science',
-    'gpa': 3.8,
-    'severity': 'moderate'
-}
-
-# Get recommendations
-result = get_recommendations(student_profile)
-
-if result['success']:
-    accommodations = result['needed_accommodations']
-    universities = result['recommendations']
-    print(f"Recommended accommodations: {accommodations}")
-    print(f"Top universities: {universities}")
-```
-
-### 2. Input Format
-
-The `student_profile` dictionary should contain:
-
-- **`mental_health`**: str - Mental health condition (e.g., 'ADHD', 'Autism', 'Depression', 'None')
-- **`physical_health`**: str - Physical health condition (e.g., 'Hearing', 'Mobility', 'Neurological', 'None')
-- **`courses`**: str - High school courses (e.g., 'Computer Science', 'Mathematics', 'Arts')
-- **`gpa`**: float - Grade point average (0.0 to 4.0)
-- **`severity`**: str - Condition severity ('mild', 'moderate', 'severe')
-
-### 3. Output Format
-
-The function returns a dictionary with:
-
-```python
-{
-    'success': True,
-    'needed_accommodations': ['Extended time', 'Quiet environment', 'Academic coaching'],
-    'recommendations': [
-        {
-            'name': 'University of Toronto',
-            'score': 4.2,
-            'accessibility_rating': 4.5,
-            'disability_support_rating': 4.8,
-            'available_accommodations': ['Extended time', 'Quiet environment', ...],
-            'location': 'Ontario'
-        },
-        # ... more universities
-    ]
-}
-```
-
-### 4. Error Handling
-
-If the function fails, it returns:
-
-```python
-{
-    'success': False,
-    'error': 'Error message describing what went wrong',
-    'recommendations': []
-}
-```
-
-## 📈 Model Performance
-
-### Training Metrics
-- **Accommodation Predictor**: Accuracy typically 85-90%
-- **University Recommender**: Mean Absolute Error < 0.3
-- **Training Time**: ~5-10 minutes on standard hardware
-
-### Evaluation
-The system evaluates:
-- Accommodation prediction accuracy
-- University recommendation relevance
-- Match score distribution
-- User satisfaction metrics
-
-## 🔧 Customization
-
-### Adding New Disabilities
-1. Update the disability options in your frontend
-2. Retrain the model with new data
-3. Update the encoding mappings
-
-### Adding New Universities
-1. Add university data to `clean_uni_info.csv`
-2. Include accommodation information
-3. Add accessibility ratings
-
-### Modifying Accommodations
-1. Update accommodation lists in the ML pipeline
-2. Retrain models with new accommodation categories
-3. Update your frontend options
-
-## 📁 Project Structure
+## Project Structure
 
 ```
 UNIfy/
-├── data/
-│   └── clean/                 # Cleaned CSV files
-│       ├── clean_student_info.csv
-│       ├── clean_uni_info.csv
-│       └── clean_user_input.csv
-├── models/                    # Trained ML models (created after training)
-│   ├── accommodation_predictor.h5
-│   ├── university_recommender.h5
-│   └── encoders.pkl
-├── src/                       # React frontend
-│   ├── components/
-│   ├── pages/
-│   └── app/
-├── html-pages/               # Legacy HTML pages
-├── public/                   # Static assets
-├── ml_pipeline.py           # ML training pipeline and API functions
-├── test_system.py           # System testing and demonstration
-├── requirements.txt         # Python dependencies
-├── package.json             # Node.js dependencies
-└── README.md                # This file
+├── frontend/           # React + TypeScript frontend
+│   ├── src/
+│   │   ├── components/ # Reusable UI components
+│   │   ├── pages/      # Page components
+│   │   ├── services/   # API service layer
+│   │   └── ...
+│   ├── public/         # Static assets
+│   ├── package.json    # Frontend dependencies
+│   └── vite.config.ts  # Vite configuration
+├── server/             # Flask API server
+│   ├── app.py         # Main Flask application
+│   ├── requirements.txt # Python dependencies
+│   ├── Procfile       # Heroku deployment config
+│   └── Unify.db       # SQLite database
+├── package.json        # Root package.json for scripts
+└── README.md          # This file
 ```
 
-## 🚨 Troubleshooting
+## Features
 
-### Common Issues
+- **Student Profile Input**: Collect student information including mental health, physical health, courses, GPA, and severity level
+- **AI-Powered Recommendations**: Get personalized university recommendations using Google's Gemini AI
+- **Intelligent Fallback**: Automatic fallback to mock recommendations if AI service is unavailable
+- **Accessibility Focus**: Designed with accessibility in mind for students with disabilities
+- **Clean Architecture**: Separated frontend and backend for maintainability
 
-1. **Memory Errors During Training**
-   - Reduce batch size in `ml_pipeline.py`
-   - Use smaller neural network architectures
-   - Process data in chunks
+## Quick Start
 
-2. **Model Loading Errors**
-   - Ensure models are trained first (`python ml_pipeline.py`)
-   - Check file paths in the API function
-   - Verify TensorFlow version compatibility
+### Prerequisites
 
-3. **Data Loading Issues**
-   - Check CSV file paths and permissions
-   - Verify CSV format and encoding
-   - Handle missing or corrupted data
+- Node.js (v18 or higher)
+- Python (v3.8 or higher)
+- npm or yarn
 
-4. **Frontend Issues**
-   - Ensure Node.js is installed and up to date
-   - Clear npm cache: `npm cache clean --force`
-   - Delete `node_modules` and reinstall: `rm -rf node_modules && npm install`
+### Installation
 
-### Performance Optimization
+1. **Clone the repository**
+   ```bash
+   git clone <repository-url>
+   cd UNIfy
+   ```
 
-1. **Faster Training**
-   - Use GPU acceleration if available
-   - Reduce training epochs
-   - Use smaller datasets for testing
+2. **Install all dependencies**
+   ```bash
+   npm run install:all
+   ```
 
-2. **Faster Inference**
-   - Load models once at startup
-   - Cache frequently used data
-   - Optimize feature encoding
+3. **Set up environment variables**
+   ```bash
+   cp env.example .env
+   # Edit .env with your configuration
+   # Add your Gemini API key: GEMINI_API_KEY=your_api_key_here
+   ```
 
-## 🔮 Future Enhancements
+### Development
 
-### Planned Features
-- **Real-time Updates**: Live accommodation availability
-- **Student Reviews**: Peer feedback on accessibility
-- **Advanced Analytics**: Detailed accessibility insights
-- **Full Frontend Integration**: Complete React UI with ML backend
+**Start both frontend and server:**
+```bash
+npm run dev
+```
 
-### Model Improvements
-- **Deep Learning**: Transformer-based architectures
-- **Multi-modal**: Text and image analysis
-- **Personalization**: User preference learning
-- **A/B Testing**: Continuous model optimization
+**Start only frontend:**
+```bash
+npm run dev:frontend
+```
 
-## 📚 Technical Details
+**Start only server:**
+```bash
+npm run dev:server
+```
 
-### Frontend Stack
-- **React 18**: Modern UI framework
-- **TypeScript**: Type-safe JavaScript
-- **Vite**: Fast build tool and dev server
-- **Tailwind CSS**: Utility-first CSS framework
+The application will be available at:
+- Frontend: http://localhost:5173
+- Backend API: http://localhost:5000
 
-### Machine Learning Stack
-- **TensorFlow 2.x**: Neural network training and inference
-- **scikit-learn**: Data preprocessing and evaluation
-- **pandas**: Data manipulation and analysis
-- **numpy**: Numerical computations
+### Building for Production
 
-### API Design
-- **Simple Function Interface**: Easy to integrate with any frontend
-- **JSON-like Output**: Standardized response format
-- **Error Handling**: Graceful failure with informative messages
-- **Model Management**: Automatic model loading and training
+```bash
+npm run build
+```
 
-## 🤝 Frontend Integration Guide
+## API Endpoints
 
-### For React/JavaScript Developers
+### Health Check
+- **GET** `/` - Server health status
 
-```javascript
-// Example API call from frontend
-const getRecommendations = async (studentProfile) => {
-    try {
-        const response = await fetch('/api/recommendations', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(studentProfile)
-        });
-        
-        const result = await response.json();
-        return result;
-    } catch (error) {
-        console.error('Error getting recommendations:', error);
-        return { success: false, error: error.message };
+### Recommendations
+- **POST** `/api/recommendations` - Get university recommendations (uses Gemini AI with fallback)
+- **POST** `/api/gemini` - Get recommendations directly from Gemini AI
+- **GET** `/api/test` - Test endpoint with sample data
+
+### Example Request
+
+```json
+POST /api/recommendations
+{
+  "mental_health": "ADHD",
+  "physical_health": "None",
+  "courses": "Computer Science",
+  "gpa": 3.8,
+  "severity": "moderate"
+}
+```
+
+### Example Response
+
+```json
+{
+  "success": true,
+  "source": "gemini_ai",
+  "needed_accommodations": ["Extended time", "Academic coaching"],
+  "recommendations": [
+    {
+      "name": "University of Toronto",
+      "score": 4.3,
+      "accessibility_rating": 4.5,
+      "disability_support_rating": 4.7,
+      "available_accommodations": ["Extended time", "Note-taking services"],
+      "location": "Ontario",
+      "reason": "Strong disability services"
     }
-};
+  ]
+}
 ```
 
-### For Python Backend Developers
+## Technology Stack
 
-```python
-# Direct import and usage
-from ml_pipeline import get_recommendations
+### Frontend
+- **React 19** - UI framework
+- **TypeScript** - Type safety
+- **Vite** - Build tool and dev server
+- **Tailwind CSS** - Styling
+- **React Router** - Client-side routing
 
-@app.route('/api/recommendations', methods=['POST'])
-def api_recommendations():
-    student_profile = request.json
-    result = get_recommendations(student_profile)
-    return jsonify(result)
-```
+### Backend
+- **Flask** - Web framework
+- **Flask-CORS** - Cross-origin resource sharing
+- **Google Gemini AI** - AI-powered recommendations
+- **SQLite** - Database (for future use)
 
-## 📄 License
+## Development Notes
+
+### Current Scope
+This is the first scope of the project, focusing on:
+- Clean project structure
+- Basic UI/UX for student input
+- AI-powered recommendations using Gemini
+- Intelligent fallback system
+- API foundation for future enhancements
+
+### Future Enhancements
+- Machine learning integration for personalized recommendations
+- Real university data integration
+- User authentication and profiles
+- Advanced filtering and search
+- Mobile responsiveness improvements
+
+## Contributing
+
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add some amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
+
+## License
 
 This project is licensed under the MIT License - see the LICENSE file for details.
-
-## 📞 Support
-
-For questions or support:
-- Create an issue in the repository
-- Contact the development team
-- Check the troubleshooting section above
-
----
-
-**UNIfy** - Empowering students with disabilities to find their perfect university match through intelligent technology and comprehensive accessibility information.
