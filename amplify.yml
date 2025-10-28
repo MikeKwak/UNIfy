@@ -4,10 +4,12 @@ frontend:
     preBuild:
       commands:
         - echo "Installing frontend dependencies..."
+        - cd frontend
         - npm install
     build:
       commands:
         - echo "Building frontend application..."
+        - cd frontend
         - npm run build
   artifacts:
     baseDirectory: frontend/dist
