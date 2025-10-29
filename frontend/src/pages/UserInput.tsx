@@ -3,6 +3,20 @@ import { useNavigate } from "react-router-dom";
 import NavBar from "../components/NavBar";
 import { getRecommendations, type StudentProfile } from "../services/api";
 
+const universityList = [
+  "University of Toronto",
+  "University of British Columbia",
+  "McGill University",
+  "University of Alberta",
+  "Western University",
+  "Queen's University",
+  "University of Waterloo",
+  "Simon Fraser University",
+  "York University",
+  "Dalhousie University",
+  // Add more as needed
+];
+
 export default function UserInput() {
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
@@ -168,6 +182,9 @@ export default function UserInput() {
               className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-lime-500 focus:border-lime-500"
             >
               <option value="">Select a university</option>
+              {universityList.map((uni) => (
+                <option key={uni} value={uni}>{uni}</option>
+              ))}
             </select>
           </div>
 

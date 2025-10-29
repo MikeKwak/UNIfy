@@ -159,3 +159,26 @@ export async function checkHealth(): Promise<any> {
     throw error;
   }
 }
+
+/**
+ * Get dynamic roadmap SVG from the Flask API
+ */
+export async function getRoadmapSVG(payload: { university: string; steps: string[] }): Promise<string> {
+  try {
+    const response = await fetch(`${API_BASE_URL}/api/roadmap`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(payload),
+    });
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.error?.message || `HTTP ${response.status}`);
+    }
+    return await response.text(); // SVG is returned as text
+  } catch (error) {
+    console.error('Roadmap SVG API Error:', error);
+    throw error;
+  }
+}

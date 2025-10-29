@@ -1,7 +1,8 @@
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import NavBar from "../components/NavBar";
-import type { RecommendationResponse, StudentProfile } from "../services/api";
+import type { RecommendationResult, StudentProfile } from "../services/api";
+import { getRoadmapSVG, getGeminiRecommendations } from "../services/api";
 
 
 interface RoadmapData {
@@ -14,24 +15,40 @@ export default function RoadMap() {
   const navigate = useNavigate();
   const [roadmapData, setRoadmapData] = useState<RoadmapData | null>(null);
   const [loading, setLoading] = useState(true);
+  const [svg, setSvg] = useState<string | null>(null);
 
   useEffect(() => {
-    // Get the roadmap data from sessionStorage
-    const storedData = sessionStorage.getItem('roadmapData');
-    if (storedData) {
-      try {
-        const parsedData: RoadmapData = JSON.parse(storedData);
-        setRoadmapData(parsedData);
-      } catch (error) {
-        console.error('Error parsing roadmap data:', error);
-        // Redirect back to form if data is corrupted
+    async function fetchRoadmap() {
+      // Get the roadmap data from sessionStorage
+      const storedData = sessionStorage.getItem('roadmapData');
+      let university = "Your University";
+      const defaultSteps: string[] = [
+        "Eligibility & Prerequisites",
+        "Required Documents",
+        "Application Submission",
+        "Decision & Next Steps"
+      ];
+      if (storedData) {
+        try {
+          const parsedData: RoadmapData = JSON.parse(storedData);
+          setRoadmapData(parsedData);
+          // Fetch Gemini recommendations using the student profile
+          const geminiResult = await getGeminiRecommendations(parsedData.studentProfile);
+          university = geminiResult.recommendations?.[0]?.name || university;
+          // Use recommended university names as steps if available
+          const geminiSteps = geminiResult.recommendations?.map((rec) => rec.name) || defaultSteps;
+          const svgData = await getRoadmapSVG({ university, steps: geminiSteps });
+          setSvg(svgData);
+        } catch (error) {
+          console.error('Error parsing roadmap data or fetching Gemini:', error);
+          navigate('/information');
+        }
+      } else {
         navigate('/information');
       }
-    } else {
-      // No data available, redirect back to form
-      navigate('/information');
+      setLoading(false);
     }
-    setLoading(false);
+    fetchRoadmap();
   }, [navigate]);
 
   if (loading) {
@@ -67,7 +84,6 @@ export default function RoadMap() {
     <div className="font-blmelody bg-white text-gray-900 min-h-screen">
       {/* Nav bar */}
       <NavBar />
-
       {/* Body */}
       <main className="pt-36 md:pt-40 pb-16 px-4 max-w-7xl mx-auto">
         <div className="grid lg:grid-cols-2 gap-10 items-start">
@@ -120,13 +136,17 @@ export default function RoadMap() {
               </button>
             </div>
           </section>
-          {/* Roadmap Image */}
-          <img
-            src="/roadmap.svg"
-            alt="Roadmap"
-            className="absolute bottom-0 right-0 max-h-full max-w-full object-contain
-                 z-0 pointer-events-none select-none"
-          />
+          {/* Roadmap SVG */}
+          <div className="relative w-full h-full flex items-center justify-center">
+            {svg ? (
+              <div
+                className="absolute bottom-0 right-0 max-h-full max-w-full object-contain z-0 pointer-events-none select-none"
+                dangerouslySetInnerHTML={{ __html: svg }}
+              />
+            ) : (
+              <p>Loading roadmap...</p>
+            )}
+          </div>
         </div>
       </main>
       {/* Navigation Buttons */}
