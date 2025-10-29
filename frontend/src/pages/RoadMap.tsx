@@ -21,7 +21,6 @@ export default function RoadMap() {
   useEffect(() => {
     async function fetchRoadmap() {
       const storedData = sessionStorage.getItem('roadmapData');
-      let universityName = "Your University";
       const defaultSteps: string[] = [
         "Eligibility & Prerequisites",
         "Required Documents",
@@ -32,14 +31,13 @@ export default function RoadMap() {
         try {
           const parsedData: RoadmapData = JSON.parse(storedData);
           setRoadmapData(parsedData);
-          const geminiResult = await getGeminiRecommendations(parsedData.studentProfile);
-          universityName = geminiResult.recommendations?.[0]?.name || universityName;
+          const universityName = parsedData.recommendations?.recommendations?.[0]?.name || "Your University";
           setUniversity(universityName);
-          const geminiSteps = geminiResult.recommendations?.map((rec) => rec.name) || defaultSteps;
-          const svgData = await getRoadmapSVG({ university: universityName, steps: geminiSteps });
+          const steps = parsedData.recommendations?.recommendations?.map((rec) => rec.name) || defaultSteps;
+          const svgData = await getRoadmapSVG({ university: universityName, steps });
           setSvg(svgData);
         } catch (error) {
-          console.error('Error parsing roadmap data or fetching Gemini:', error);
+          console.error('Error parsing roadmap data:', error);
           setRoadmapData(null); // Show fallback UI instead of redirect
           setSvg(null);
           setUniversity("Your University");
