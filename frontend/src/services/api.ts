@@ -165,6 +165,9 @@ export async function checkHealth(): Promise<any> {
  */
 export async function getRoadmapSVG(payload: { university: string; steps: string[] }): Promise<string> {
   try {
+    console.log('Fetching roadmap SVG from:', `${API_BASE_URL}/api/roadmap`);
+    console.log('Roadmap payload:', payload);
+    
     const response = await fetch(`${API_BASE_URL}/api/roadmap`, {
       method: 'POST',
       headers: {
@@ -172,13 +175,37 @@ export async function getRoadmapSVG(payload: { university: string; steps: string
       },
       body: JSON.stringify(payload),
     });
+    
+    console.log('Roadmap SVG response status:', response.status);
+    
     if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(errorData.error?.message || `HTTP ${response.status}`);
+      // Clone response before reading to avoid body consumption issues
+      const responseClone = response.clone();
+      let errorMessage = `HTTP ${response.status}`;
+      try {
+        const errorData = await responseClone.json();
+        errorMessage = errorData.error?.message || errorMessage;
+      } catch (e) {
+        // If response is not JSON, try to get text
+        try {
+          const text = await response.text();
+          if (text) errorMessage = text;
+        } catch (textError) {
+          console.warn('Could not read error response:', textError);
+        }
+      }
+      console.error('Roadmap SVG API Error:', errorMessage);
+      throw new Error(errorMessage);
     }
-    return await response.text(); // SVG is returned as text
+    
+    const svgText = await response.text(); // SVG is returned as text
+    console.log('Roadmap SVG received, length:', svgText.length);
+    return svgText;
   } catch (error) {
-    console.error('Roadmap SVG API Error:', error);
+    console.error('Roadmap SVG API Error (full):', error);
+    if (error instanceof TypeError && error.message.includes('fetch')) {
+      throw new Error(`Failed to connect to API at ${API_BASE_URL}. Please check if the backend is running and the URL is correct.`);
+    }
     throw error;
   }
 }

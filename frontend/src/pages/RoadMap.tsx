@@ -19,52 +19,91 @@ export default function RoadMap() {
   const [university, setUniversity] = useState<string>("Your University");
 
   useEffect(() => {
-    // Set dummy roadmapData if not present, then fetch and render roadmap
+    // Fetch and render roadmap
     async function ensureRoadmapDataAndFetch() {
-      if (!sessionStorage.getItem('roadmapData')) {
-        const dummyRoadmapData = {
-          studentProfile: {
-            name: "Test Student",
-            // Add other required fields for StudentProfile here
-          },
-          recommendations: {
-            source: "gemini",
-            recommendations: [
-              { name: "Graduation Book University" },
-              { name: "Another University" }
-            ],
-            needed_accommodations: ["Graduation Book", "Wheelchair Access", "Extra Time", "Quiet Room", "Sign Language Interpreter"]
-          }
-        };
-        sessionStorage.setItem('roadmapData', JSON.stringify(dummyRoadmapData));
-      }
-      const storedData = sessionStorage.getItem('roadmapData');
       const defaultSteps: string[] = [
         "Eligibility & Prerequisites",
         "Required Documents",
         "Application Submission",
         "Decision & Next Steps"
       ];
-      if (storedData) {
+
+      // First, try to get actual data from sessionStorage (set by UserInput/Recommendations)
+      const storedRecommendations = sessionStorage.getItem('recommendations');
+      const storedProfile = sessionStorage.getItem('studentProfile');
+      
+      let roadmapDataToUse: RoadmapData | null = null;
+
+      if (storedRecommendations && storedProfile) {
         try {
-          const parsedData: RoadmapData = JSON.parse(storedData);
-          setRoadmapData(parsedData);
-          const universityName = parsedData.recommendations?.recommendations?.[0]?.name || "Your University";
-          setUniversity(universityName);
-          const steps = parsedData.recommendations?.recommendations?.map((rec) => rec.name) || defaultSteps;
-          const svgData = await getRoadmapSVG({ university: universityName, steps });
-          setSvg(svgData);
+          // Combine the actual recommendations and profile
+          const recommendations = JSON.parse(storedRecommendations);
+          const studentProfile = JSON.parse(storedProfile);
+          roadmapDataToUse = {
+            studentProfile,
+            recommendations
+          };
         } catch (error) {
-          console.error('Error parsing roadmap data:', error);
-          setRoadmapData(null);
-          setSvg(null);
-          setUniversity("Your University");
+          console.error('Error parsing stored recommendations/profile:', error);
         }
-      } else {
-        setRoadmapData(null);
-        setSvg(null);
-        setUniversity("Your University");
       }
+
+      // If no actual data, check for legacy roadmapData or use dummy data
+      if (!roadmapDataToUse) {
+        const storedRoadmapData = sessionStorage.getItem('roadmapData');
+        if (storedRoadmapData) {
+          try {
+            roadmapDataToUse = JSON.parse(storedRoadmapData);
+          } catch (error) {
+            console.error('Error parsing stored roadmapData:', error);
+          }
+        }
+      }
+
+      // Last resort: create dummy data for testing
+      if (!roadmapDataToUse) {
+        roadmapDataToUse = {
+          studentProfile: {
+            mental_health: "None",
+            physical_health: "None",
+            courses: "General",
+            gpa: 3.0,
+            severity: "moderate" as const
+          },
+          recommendations: {
+            success: true,
+            source: "gemini",
+            recommendations: [
+              { 
+                name: "Graduation Book University",
+                score: 4.5,
+                accessibility_rating: 4.5,
+                disability_support_rating: 4.8,
+                available_accommodations: ["Graduation Book", "Wheelchair Access"],
+                location: "Ontario",
+                reason: "Excellent disability support services"
+              }
+            ],
+            needed_accommodations: ["Graduation Book", "Wheelchair Access", "Extra Time", "Quiet Room"]
+          }
+        };
+      }
+
+      setRoadmapData(roadmapDataToUse);
+      const universityName = roadmapDataToUse.recommendations?.recommendations?.[0]?.name || "Your University";
+      setUniversity(universityName);
+      
+      // Always use defaultSteps for roadmap visualization
+      const steps = defaultSteps;
+      try {
+        const svgData = await getRoadmapSVG({ university: universityName, steps });
+        setSvg(svgData);
+      } catch (svgError) {
+        console.error('Error fetching roadmap SVG:', svgError);
+        // Continue without SVG - the component will show "Loading roadmap..." message
+        setSvg(null);
+      }
+      
       setLoading(false);
     }
     ensureRoadmapDataAndFetch();
