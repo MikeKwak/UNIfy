@@ -52,6 +52,27 @@ export default function RoadMap() {
     fetchRoadmap();
   }, [navigate]);
 
+  // Helper for testing: set dummy roadmapData if not present
+  useEffect(() => {
+    if (!sessionStorage.getItem('roadmapData')) {
+      const dummyRoadmapData = {
+        studentProfile: {
+          name: "Test Student",
+          // Add other required fields for StudentProfile here
+        },
+        recommendations: {
+          source: "gemini",
+          recommendations: [
+            { name: "Graduation Book University" },
+            { name: "Another University" }
+          ],
+          needed_accommodations: ["Graduation Book", "Wheelchair Access", "Extra Time", "Quiet Room", "Sign Language Interpreter"]
+        }
+      };
+      sessionStorage.setItem('roadmapData', JSON.stringify(dummyRoadmapData));
+    }
+  }, []);
+
   if (loading) {
     return (
       <div className="font-blmelody bg-white text-gray-900 min-h-screen flex items-center justify-center">
@@ -115,6 +136,9 @@ export default function RoadMap() {
                     <li key={index} className="flex items-center mb-1">
                       <span className="w-2 h-2 bg-blue-400 rounded-full mr-2"></span>
                       {accommodation}
+                      {accommodation === "Graduation Book" && (
+                        <span className="ml-2 px-2 py-1 bg-yellow-200 text-yellow-900 rounded text-xs font-semibold">Special</span>
+                      )}
                     </li>
                   ))}
                   {recommendations.needed_accommodations.length > 4 && (
