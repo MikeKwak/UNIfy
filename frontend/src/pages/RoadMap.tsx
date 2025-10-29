@@ -1,8 +1,8 @@
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import NavBar from "../components/NavBar";
-import type { RecommendationResult, StudentProfile } from "../services/api";
 import { getRoadmapSVG, getGeminiRecommendations } from "../services/api";
+import type { RecommendationResponse, StudentProfile } from "../services/api";
 
 
 interface RoadmapData {
