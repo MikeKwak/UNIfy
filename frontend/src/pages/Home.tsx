@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import NavBar from "../components/NavBar";
+import logoSvg from "../assets/logo.svg";
 
 export default function Home() {
   return (
@@ -28,7 +29,7 @@ export default function Home() {
         {/* Image */}
         <div className="md:w-1/2 mb-12 md:mb-0 flex justify-center">
           <img
-            src="/logo.svg"
+            src={logoSvg}
             alt="Graduation Book"
             className="w-full max-w-xl mx-auto"
           />

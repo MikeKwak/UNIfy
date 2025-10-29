@@ -2,6 +2,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { useAuth } from "../contexts/AuthContext";
 import AccessibilityMenu from "./AccessibilityMenu";
+import logoSvg from "../assets/logo.svg";
 
 export default function NavBar() {
   const [open, setOpen] = useState(false);
@@ -23,7 +24,7 @@ export default function NavBar() {
         <div className="max-w-7xl mx-auto flex justify-between items-center">
           {/* Logo */}
           <div className="flex items-center space-x-2">
-            <img src="/logo.svg" alt="Logo" className="h-12 w-12" />
+            <img src={logoSvg} alt="Logo" className="h-12 w-12" />
             <Link to="/" className="font-bold text-xl">
               UNIfy
             </Link>

@@ -3,6 +3,7 @@ import { useNavigate, useLocation } from "react-router-dom";
 import NavBar from "../components/NavBar";
 import { useAuth } from "../contexts/AuthContext";
 import type { FormEvent } from "react";
+import logoSvg from "../assets/logo.svg";
 
 export default function Login() {
   const navigate = useNavigate();
@@ -46,7 +47,7 @@ export default function Login() {
       <div className="bg-white shadow-lg rounded-lg p-8 w-full max-w-md mt-20">
         {/* Logo + Header */}
         <div className="flex flex-col items-center mb-8">
-          <img src="/logo.svg" alt="UNIfy logo" className="w-12 h-12 mb-2" />
+          <img src={logoSvg} alt="UNIfy logo" className="w-12 h-12 mb-2" />
           <h1 className="text-2xl font-bold">UNIfy</h1>
           <p className="text-gray-600 mt-2">Log in to your account</p>
         </div>

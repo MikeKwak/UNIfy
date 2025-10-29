@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import NavBar from "../components/NavBar";
 import { useAuth } from "../contexts/AuthContext";
+import logoSvg from "../assets/logo.svg";
 
 export default function Signup() {
     const navigate = useNavigate();
@@ -69,7 +70,7 @@ export default function Signup() {
             <NavBar />
             <div className="bg-white shadow-lg rounded-lg p-8 w-full max-w-md mt-20">
                 <div className="flex flex-col items-center mb-8">
-                    <img src="/logo.svg" alt="UNIfy logo" className="w-12 h-12 mb-2" />
+                    <img src={logoSvg} alt="UNIfy logo" className="w-12 h-12 mb-2" />
                     <h1 className="text-2xl font-bold">
                         {showConfirmation ? "Confirm Your Account" : "Sign Up"}
                     </h1>
