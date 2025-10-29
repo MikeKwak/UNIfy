@@ -19,7 +19,6 @@ export default function RoadMap() {
 
   useEffect(() => {
     async function fetchRoadmap() {
-      // Get the roadmap data from sessionStorage
       const storedData = sessionStorage.getItem('roadmapData');
       let university = "Your University";
       const defaultSteps: string[] = [
@@ -32,19 +31,19 @@ export default function RoadMap() {
         try {
           const parsedData: RoadmapData = JSON.parse(storedData);
           setRoadmapData(parsedData);
-          // Fetch Gemini recommendations using the student profile
           const geminiResult = await getGeminiRecommendations(parsedData.studentProfile);
           university = geminiResult.recommendations?.[0]?.name || university;
-          // Use recommended university names as steps if available
           const geminiSteps = geminiResult.recommendations?.map((rec) => rec.name) || defaultSteps;
           const svgData = await getRoadmapSVG({ university, steps: geminiSteps });
           setSvg(svgData);
         } catch (error) {
           console.error('Error parsing roadmap data or fetching Gemini:', error);
-          navigate('/information');
+          setRoadmapData(null); // Show fallback UI instead of redirect
+          setSvg(null);
         }
       } else {
-        navigate('/information');
+        setRoadmapData(null); // Show fallback UI instead of redirect
+        setSvg(null);
       }
       setLoading(false);
     }
@@ -90,7 +89,7 @@ export default function RoadMap() {
           {/* Hero Section */}
           <section>
             <h1 className="text-[34px] leading-[1.1] sm:text-5xl md:text-6xl font-normal tracking-tight">
-              Your step‑by‑step plan for ___ University
+              Your step‑by‑step plan for {svg ? university : "___"} University
             </h1>
             <p className="mt-6 text-[18px] sm:text-xl leading-6 sm:leading-7 tracking-[-0.02em] text-black">
               Click on each Checkpoint for more details.
