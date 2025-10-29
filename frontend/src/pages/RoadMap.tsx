@@ -19,7 +19,25 @@ export default function RoadMap() {
   const [university, setUniversity] = useState<string>("Your University");
 
   useEffect(() => {
-    async function fetchRoadmap() {
+    // Set dummy roadmapData if not present, then fetch and render roadmap
+    async function ensureRoadmapDataAndFetch() {
+      if (!sessionStorage.getItem('roadmapData')) {
+        const dummyRoadmapData = {
+          studentProfile: {
+            name: "Test Student",
+            // Add other required fields for StudentProfile here
+          },
+          recommendations: {
+            source: "gemini",
+            recommendations: [
+              { name: "Graduation Book University" },
+              { name: "Another University" }
+            ],
+            needed_accommodations: ["Graduation Book", "Wheelchair Access", "Extra Time", "Quiet Room", "Sign Language Interpreter"]
+          }
+        };
+        sessionStorage.setItem('roadmapData', JSON.stringify(dummyRoadmapData));
+      }
       const storedData = sessionStorage.getItem('roadmapData');
       const defaultSteps: string[] = [
         "Eligibility & Prerequisites",
@@ -38,40 +56,19 @@ export default function RoadMap() {
           setSvg(svgData);
         } catch (error) {
           console.error('Error parsing roadmap data:', error);
-          setRoadmapData(null); // Show fallback UI instead of redirect
+          setRoadmapData(null);
           setSvg(null);
           setUniversity("Your University");
         }
       } else {
-        setRoadmapData(null); // Show fallback UI instead of redirect
+        setRoadmapData(null);
         setSvg(null);
         setUniversity("Your University");
       }
       setLoading(false);
     }
-    fetchRoadmap();
+    ensureRoadmapDataAndFetch();
   }, [navigate]);
-
-  // Helper for testing: set dummy roadmapData if not present
-  useEffect(() => {
-    if (!sessionStorage.getItem('roadmapData')) {
-      const dummyRoadmapData = {
-        studentProfile: {
-          name: "Test Student",
-          // Add other required fields for StudentProfile here
-        },
-        recommendations: {
-          source: "gemini",
-          recommendations: [
-            { name: "Graduation Book University" },
-            { name: "Another University" }
-          ],
-          needed_accommodations: ["Graduation Book", "Wheelchair Access", "Extra Time", "Quiet Room", "Sign Language Interpreter"]
-        }
-      };
-      sessionStorage.setItem('roadmapData', JSON.stringify(dummyRoadmapData));
-    }
-  }, []);
 
   if (loading) {
     return (
