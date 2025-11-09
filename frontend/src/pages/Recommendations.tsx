@@ -89,7 +89,6 @@ export default function Recommendations() {
             <div><strong>Mental Health:</strong> {studentProfile.mental_health}</div>
             <div><strong>Physical Health:</strong> {studentProfile.physical_health}</div>
             <div><strong>Severity:</strong> {studentProfile.severity}</div>
-            <div><strong>Recommendation Source:</strong> {recommendations.source}</div>
           </div>
         </div>
 
@@ -153,7 +152,7 @@ export default function Recommendations() {
                   )}
 
                   {university.available_accommodations && university.available_accommodations.length > 0 && (
-                    <div>
+                    <div className="mb-4">
                       <div className="text-sm text-gray-600 mb-2">Available Accommodations:</div>
                       <div className="flex flex-wrap gap-2">
                         {university.available_accommodations.map((accommodation, accIndex) => (
@@ -167,6 +166,15 @@ export default function Recommendations() {
                       </div>
                     </div>
                   )}
+
+                  <div className="mt-4 pt-4 border-t border-gray-200">
+                    <button
+                      onClick={() => navigate('/roadmap')}
+                      className="bg-lime-500 hover:bg-lime-600 text-white px-6 py-2 rounded-md w-full"
+                    >
+                      View Roadmap
+                    </button>
+                  </div>
                 </div>
               ))}
             </div>
@@ -200,12 +208,7 @@ export default function Recommendations() {
           >
             Update Profile
           </button>
-          <button
-            onClick={() => navigate('/roadmap')}
-            className="bg-lime-500 hover:bg-lime-600 text-white px-6 py-2 rounded-md"
-          >
-            View Roadmap
-          </button>
+          
         </div>
       </main>
     </div>
