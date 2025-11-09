@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import NavBar from "../components/NavBar";
 import PageHeader from "../components/PageHeader";
 import type { StudentProfile, RecommendationResponse } from "../services/api";
+import arrowRight from "../assets/arrowRight.svg";
 
 export default function Eligibility() {
   const navigate = useNavigate();
@@ -84,7 +85,7 @@ export default function Eligibility() {
 
                 <div className="col-span-4 flex items-start space-x-3">
                   <img
-                    src="/src/assets/arrowRight.svg"
+                    src={arrowRight}
                     alt="Arrow"
                     className="h-6 w-20"
                   />
@@ -114,7 +115,7 @@ export default function Eligibility() {
 
                 <div className="col-span-4 flex items-start space-x-3">
                   <img
-                    src="/src/assets/arrowRight.svg"
+                    src={arrowRight}
                     alt="Arrow"
                     className="h-6 w-20"
                   />
@@ -142,7 +143,7 @@ export default function Eligibility() {
 
                 <div className="col-span-4 flex items-start space-x-3">
                   <img
-                    src="/src/assets/arrowRight.svg"
+                    src={arrowRight}
                     alt="Arrow"
                     className="h-6 w-20"
                   />
