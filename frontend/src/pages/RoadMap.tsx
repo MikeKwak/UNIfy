@@ -129,7 +129,7 @@ export default function RoadMap() {
           {/* Hero Section */}
           <section>
             <h1 className="text-[34px] leading-[1.1] sm:text-5xl md:text-6xl font-normal tracking-tight">
-              Your step‑by‑step plan for {university}
+              Your step‑by‑step plan for {recommendations?.recommendations?.[0]?.name || "your chosen university"}
             </h1>
             <p className="mt-6 text-[18px] sm:text-xl leading-6 sm:leading-7 tracking-[-0.02em] text-black">
               Click on each Checkpoint for more details.
