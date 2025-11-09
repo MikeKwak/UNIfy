@@ -1,8 +1,8 @@
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import NavBar from "../components/NavBar";
-import { getRoadmapSVG } from "../services/api";
 import type { RecommendationResponse, StudentProfile } from "../services/api";
+import roadBgSvg from "../assets/road_bg.svg";
 
 
 interface RoadmapData {
@@ -15,19 +15,11 @@ export default function RoadMap() {
   const navigate = useNavigate();
   const [roadmapData, setRoadmapData] = useState<RoadmapData | null>(null);
   const [loading, setLoading] = useState(true);
-  const [svg, setSvg] = useState<string | null>(null);
   const [university, setUniversity] = useState<string>("Your University");
 
   useEffect(() => {
-    // Fetch and render roadmap
-    async function ensureRoadmapDataAndFetch() {
-      const defaultSteps: string[] = [
-        "Eligibility & Prerequisites",
-        "Required Documents",
-        "Application Submission",
-        "Decision & Next Steps"
-      ];
-
+    // Load roadmap data from session storage
+    function loadRoadmapData() {
       // First, try to get actual data from sessionStorage (set by UserInput/Recommendations)
       const storedRecommendations = sessionStorage.getItem('recommendations');
       const storedProfile = sessionStorage.getItem('studentProfile');
@@ -93,20 +85,9 @@ export default function RoadMap() {
       const universityName = roadmapDataToUse.recommendations?.recommendations?.[0]?.name || "Your University";
       setUniversity(universityName);
       
-      // Always use defaultSteps for roadmap visualization
-      const steps = defaultSteps;
-      try {
-        const svgData = await getRoadmapSVG({ university: universityName, steps });
-        setSvg(svgData);
-      } catch (svgError) {
-        console.error('Error fetching roadmap SVG:', svgError);
-        // Continue without SVG - the component will show "Loading roadmap..." message
-        setSvg(null);
-      }
-      
       setLoading(false);
     }
-    ensureRoadmapDataAndFetch();
+    loadRoadmapData();
   }, [navigate]);
 
   if (loading) {
@@ -148,7 +129,7 @@ export default function RoadMap() {
           {/* Hero Section */}
           <section>
             <h1 className="text-[34px] leading-[1.1] sm:text-5xl md:text-6xl font-normal tracking-tight">
-              Your step‑by‑step plan for {svg ? university : "___"} University
+              Your step‑by‑step plan for {university}
             </h1>
             <p className="mt-6 text-[18px] sm:text-xl leading-6 sm:leading-7 tracking-[-0.02em] text-black">
               Click on each Checkpoint for more details.
@@ -197,40 +178,49 @@ export default function RoadMap() {
               </button>
             </div>
           </section>
-          {/* Roadmap SVG */}
+          {/* Roadmap SVG with Checkpoints */}
           <div className="relative w-full h-full flex items-center justify-center">
-            {svg ? (
-              <div
-                className="absolute bottom-0 right-0 max-h-full max-w-full object-contain z-0 pointer-events-none select-none"
-                dangerouslySetInnerHTML={{ __html: svg }}
-              />
-            ) : (
-              <p>Loading roadmap...</p>
-            )}
+            <img 
+              src={roadBgSvg} 
+              alt="Roadmap background" 
+              className="w-full h-auto max-w-full object-contain"
+            />
+            
+            {/* Checkpoint 1: Eligibility and Prerequisites */}
+            <div 
+              className="absolute top-[15%] right-[10%] flex flex-col items-center cursor-pointer group"
+              onClick={() => navigate('/eligibility')}
+            >
+              <div className="w-16 h-16 border-4 border-dashed border-[#92BD3A] rounded-full group-hover:border-lime-600 transition-colors"></div>
+              <p className="mt-2 text-sm font-medium text-gray-800 group-hover:text-lime-600 transition-colors">
+                Eligibility and Prerequisites
+              </p>
+            </div>
+
+            {/* Checkpoint 2: Required Documents */}
+            <div 
+              className="absolute top-[40%] left-[5%] flex flex-col items-center cursor-pointer group"
+              onClick={() => navigate('/required')}
+            >
+              <div className="w-16 h-16 border-4 border-dashed border-[#92BD3A] rounded-full group-hover:border-lime-600 transition-colors"></div>
+              <p className="mt-2 text-sm font-medium text-gray-800 group-hover:text-lime-600 transition-colors">
+                Required Documents
+              </p>
+            </div>
+
+            {/* Checkpoint 3: Financial Aid */}
+            <div 
+              className="absolute top-[65%] right-[15%] flex flex-col items-center cursor-pointer group"
+              onClick={() => navigate('/submission')}
+            >
+              <div className="w-16 h-16 border-4 border-dashed border-[#92BD3A] rounded-full group-hover:border-lime-600 transition-colors"></div>
+              <p className="mt-2 text-sm font-medium text-white-800 group-hover:text-lime-600 transition-colors">
+                Financial Aid
+              </p>
+            </div>
           </div>
         </div>
       </main>
-      {/* Navigation Buttons */}
-      <div className="absolute bottom-8 left-8 flex flex-col gap-4 z-20">
-        <button
-          onClick={() => navigate("/eligibility")}
-          className="bg-[#92BD3A] text-white px-5 py-2 rounded-md hover:bg-lime-600 transition"
-        >
-          Eligibility & Prerequisites
-        </button>
-        <button
-          onClick={() => navigate("/required")}
-          className="bg-[#92BD3A] text-white px-5 py-2 rounded-md hover:bg-lime-600 transition"
-        >
-          Required Documents
-        </button>
-        <button
-          onClick={() => navigate("/submission")}
-          className="bg-[#92BD3A] text-white px-5 py-2 rounded-md hover:bg-lime-600 transition"
-        >
-          Application Submission
-        </button>
-      </div>
     </div>
   );
 }
