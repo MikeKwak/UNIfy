@@ -1,5 +1,14 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
-import { signIn, signUp, signOut, getCurrentUser, confirmSignUp, resendSignUpCode } from 'aws-amplify/auth';
+import { 
+  signIn, 
+  signUp, 
+  signOut, 
+  getCurrentUser, 
+  confirmSignUp, 
+  resendSignUpCode, 
+  resetPassword, type ResetPasswordOutput, 
+  confirmResetPassword, type ConfirmResetPasswordInput
+} from 'aws-amplify/auth';
 import { Hub } from 'aws-amplify/utils';
 
 interface User {
@@ -16,6 +25,8 @@ interface AuthContextType {
   signOut: () => Promise<void>;
   confirmSignUp: (email: string, code: string) => Promise<void>;
   resendSignUpCode: (email: string) => Promise<void>;
+  resetPassword: (email: string) => Promise<void>;
+  confirmResetPassword: (username: string, confirmationCode: string, newPassword: string) => Promise<void>;
   isAuthenticated: boolean;
 }
 
@@ -137,6 +148,47 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       throw error;
     }
   };
+  
+  const handleResetPassword = async (username: string): Promise<void> => {
+    try {
+      const output = await resetPassword({ username });
+      handleResetPasswordNextSteps(output);
+    } catch (error) {
+      console.error('Reset password error:', error);
+      throw error;
+    }
+  };
+
+  function handleResetPasswordNextSteps(output: ResetPasswordOutput) {
+  const { nextStep } = output;
+  switch (nextStep.resetPasswordStep) {
+    case 'CONFIRM_RESET_PASSWORD_WITH_CODE':
+      const codeDeliveryDetails = nextStep.codeDeliveryDetails;
+      console.log(
+        `Confirmation code was sent to ${codeDeliveryDetails.deliveryMedium}`
+      );
+      // Collect the confirmation code from the user and pass to confirmResetPassword.
+      break;
+    case 'DONE':
+      console.log('Successfully reset password.');
+      break;
+  }
+}
+
+const handleConfirmResetPassword = async (username: string, confirmationCode: string, newPassword: string): Promise<void> => {
+  try {
+    const input: ConfirmResetPasswordInput = {
+      username,
+      confirmationCode,
+      newPassword,
+    };
+    const output = await confirmResetPassword(input);
+    console.log('Password reset confirmed:', output);
+  } catch (error) {
+    console.error('Confirm reset password error:', error);
+    throw error;
+  }
+}
 
   const value: AuthContextType = {
     user,
@@ -146,6 +198,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     signOut: handleSignOut,
     confirmSignUp: handleConfirmSignUp,
     resendSignUpCode: handleResendSignUpCode,
+    resetPassword: handleResetPassword,
+    confirmResetPassword: handleConfirmResetPassword,
     isAuthenticated: !!user,
   };
 

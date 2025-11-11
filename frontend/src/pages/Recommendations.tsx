@@ -129,31 +129,31 @@ export default function Recommendations() {
                     </div>
                     <div className="text-right">
                       <div className="text-2xl font-bold text-lime-600">{university.score}/5</div>
-                      <div className="text-sm text-gray-500">Overall Score</div>
+                      <div className=" text-gray-500">Overall Score</div>
                     </div>
                   </div>
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                     <div>
-                      <div className="text-sm text-gray-600">Accessibility Rating</div>
+                      <div className=" text-gray-600">Accessibility Rating</div>
                       <div className="text-lg font-semibold">{university.accessibility_rating}/5</div>
                     </div>
                     <div>
-                      <div className="text-sm text-gray-600">Disability Support Rating</div>
+                      <div className=" text-gray-600">Disability Support Rating</div>
                       <div className="text-lg font-semibold">{university.disability_support_rating}/5</div>
                     </div>
                   </div>
 
                   {university.reason && (
                     <div className="mb-4">
-                      <div className="text-sm text-gray-600 mb-1">Why this university:</div>
+                      <div className=" text-gray-600 mb-1">Why this university:</div>
                       <p className="text-gray-800">{university.reason}</p>
                     </div>
                   )}
 
                   {university.available_accommodations && university.available_accommodations.length > 0 && (
                     <div className="mb-4">
-                      <div className="text-sm text-gray-600 mb-2">Available Accommodations:</div>
+                      <div className=" text-gray-600 mb-2">Available Accommodations:</div>
                       <div className="flex flex-wrap gap-2">
                         {university.available_accommodations.map((accommodation, accIndex) => (
                           <span

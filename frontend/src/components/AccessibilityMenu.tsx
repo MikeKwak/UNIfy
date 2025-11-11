@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useFontSize } from "../../fonts/FontSizeContext";
 
 type AccessibilityMenuProps = {
   open: boolean;
@@ -9,6 +10,7 @@ export default function AccessibilityMenu({
   open,
   onClose,
 }: AccessibilityMenuProps) {
+  const { isLarge, toggleSize } = useFontSize();
   return (
     <div
       className={`fixed top-0 right-0 h-full w-80 bg-white shadow-lg border-l border-gray-200 transform transition-transform duration-300 z-50 ${
@@ -28,18 +30,20 @@ export default function AccessibilityMenu({
         <hr />
 
         {/* Text Size */}
-        <div>
-          <p className="mb-2">Text Size</p>
-          <div className="flex items-center space-x-6">
-            <label className="flex items-center space-x-2">
-              <input type="radio" name="textSize" value="normal" />
-              <span>Normal</span>
-            </label>
-            <label className="flex items-center space-x-2">
-              <input type="radio" name="textSize" value="large" />
-              <span>Large</span>
-            </label>
-          </div>
+        <div className="flex items-center justify-between">
+          <span>{isLarge ? "Normal Text" : "Large Text"}</span>
+          <button
+            onClick={toggleSize}
+            className={`relative inline-flex h-6 w-12 items-center rounded-full transition-colors ${
+              isLarge ? "bg-lime-600" : "bg-gray-300"
+            }`}
+          >
+            <span
+              className={`inline-block h-4 w-4 transform rounded-full bg-white transition ${
+          isLarge ? "translate-x-6" : "translate-x-1"
+              }`}
+            />
+          </button>
         </div>
         <hr />
 

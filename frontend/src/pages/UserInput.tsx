@@ -91,7 +91,7 @@ export default function UserInput() {
           <div>
             <label
               htmlFor="name"
-              className="block text-sm font-medium mb-1 text-lime-600"
+              className="block  font-medium mb-1 text-lime-600"
             >
               Full Name
             </label>
@@ -107,7 +107,7 @@ export default function UserInput() {
           <div>
             <label
               htmlFor="email"
-              className="block text-sm font-medium mb-1 text-lime-600"
+              className="block  font-medium mb-1 text-lime-600"
             >
               Email
             </label>
@@ -124,7 +124,7 @@ export default function UserInput() {
           <div>
             <label
               htmlFor="school"
-              className="block text-sm font-medium mb-1 text-lime-600"
+              className="block  font-medium mb-1 text-lime-600"
             >
               High School
             </label>
@@ -139,7 +139,7 @@ export default function UserInput() {
           <div>
             <label
               htmlFor="gpa"
-              className="block text-sm font-medium mb-1 text-lime-600"
+              className="block  font-medium mb-1 text-lime-600"
             >
               Current GPA
             </label>
@@ -159,7 +159,7 @@ export default function UserInput() {
           <div>
             <label
               htmlFor="program"
-              className="block text-sm font-medium mb-1 text-lime-600"
+              className="block  font-medium mb-1 text-lime-600"
             >
               Program of Interest
             </label>
@@ -173,7 +173,7 @@ export default function UserInput() {
 
           {/* University Preference */}
           <div>
-            <label className="block text-sm font-medium mb-2 text-lime-600">
+            <label className="block font-medium mb-2 text-lime-600">
               University Preference
             </label>
             <select
@@ -190,7 +190,7 @@ export default function UserInput() {
 
           {/* Application Round */}
           <fieldset>
-            <legend className="block text-sm font-medium mb-1 text-lime-600">
+            <legend className="block  font-medium mb-1 text-lime-600">
               Application Round (Early/General Round)
             </legend>
             <div className="flex flex-wrap gap-6">
@@ -208,7 +208,7 @@ export default function UserInput() {
           <div>
             <label
               htmlFor="financial-preference"
-              className="block text-sm font-medium mb-1 text-lime-600"
+              className="block  font-medium mb-1 text-lime-600"
             >
               Financial Preference
             </label>
@@ -225,7 +225,7 @@ export default function UserInput() {
           <div>
             <label
               htmlFor="ecs"
-              className="block text-sm font-medium mb-1 text-lime-600"
+              className="block  font-medium mb-1 text-lime-600"
             >
               List of Extracurriculars (Optional)
             </label>
@@ -241,7 +241,7 @@ export default function UserInput() {
           <div>
             <label
               htmlFor="mental-health"
-              className="block text-sm font-medium mb-1 text-lime-600"
+              className="block  font-medium mb-1 text-lime-600"
             >
               Mental Health Condition
             </label>
@@ -264,7 +264,7 @@ export default function UserInput() {
           <div>
             <label
               htmlFor="physical-health"
-              className="block text-sm font-medium mb-1 text-lime-600"
+              className="block  font-medium mb-1 text-lime-600"
             >
               Physical Health Condition
             </label>
@@ -284,7 +284,7 @@ export default function UserInput() {
 
           {/* Severity Level */}
           <fieldset>
-            <legend className="block text-sm font-medium mb-1 text-lime-600">
+            <legend className="block  font-medium mb-1 text-lime-600">
               Severity Level
             </legend>
             <div className="flex flex-wrap gap-6">
@@ -307,7 +307,7 @@ export default function UserInput() {
           <div>
             <label
               htmlFor="program-interest"
-              className="block text-sm font-medium mb-1 text-lime-600"
+              className="block  font-medium mb-1 text-lime-600"
             >
               Program of Interest
             </label>

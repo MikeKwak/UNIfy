@@ -79,7 +79,7 @@ export default function Submission() {
           <>
             {/* Profile Summary */}
             <div className="mb-8 p-4 bg-lime-50 border border-lime-200 rounded-md">
-              <p className="text-sm text-lime-800">
+              <p className=" text-lime-800">
                 <strong>Your Profile:</strong> {studentProfile.courses} | GPA: {studentProfile.gpa} | 
                 Mental Health: {studentProfile.mental_health} | Physical Health: {studentProfile.physical_health}
               </p>

@@ -91,7 +91,7 @@ export default function Signup() {
                         )}
                         
                         <div>
-                            <label htmlFor="confirmationCode" className="block text-sm font-medium text-gray-700">
+                            <label htmlFor="confirmationCode" className="block  font-medium text-gray-700">
                                 Confirmation Code
                             </label>
                             <input
@@ -118,7 +118,7 @@ export default function Signup() {
                             <button
                                 type="button"
                                 onClick={() => setShowConfirmation(false)}
-                                className="text-sm text-lime-600 hover:underline"
+                                className="text-lime-600  hover:underline"
                             >
                                 Back to Sign Up
                             </button>
@@ -133,7 +133,7 @@ export default function Signup() {
                         )}
                         
                         <div>
-                            <label htmlFor="name" className="block text-sm font-medium text-gray-700">Name</label>
+                            <label htmlFor="name" className="block  font-medium text-gray-700">Name</label>
                             <input
                                 type="text"
                                 id="name"
@@ -145,7 +145,7 @@ export default function Signup() {
                             />
                         </div>
                         <div>
-                            <label htmlFor="email" className="block text-sm font-medium text-gray-700">Email</label>
+                            <label htmlFor="email" className="block  font-medium text-gray-700">Email</label>
                             <input
                                 type="email"
                                 id="email"
@@ -157,7 +157,7 @@ export default function Signup() {
                             />
                         </div>
                         <div>
-                            <label htmlFor="password" className="block text-sm font-medium text-gray-700">Password</label>
+                            <label htmlFor="password" className="block  font-medium text-gray-700">Password</label>
                             <input
                                 type="password"
                                 id="password"
@@ -170,7 +170,7 @@ export default function Signup() {
                             <p className="text-xs text-gray-500 mt-1">Password must be at least 8 characters long</p>
                         </div>
                         <div>
-                            <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700">Confirm Password</label>
+                            <label htmlFor="confirmPassword" className="block  font-medium text-gray-700">Confirm Password</label>
                             <input
                                 type="password"
                                 id="confirmPassword"
@@ -188,6 +188,16 @@ export default function Signup() {
                         >
                             {loading ? "Creating Account..." : "Sign Up"}
                         </button>
+
+                        <div className="mt-4 bg-blue-50 border border-blue-200 rounded-md p-4">
+                        <p className="font-medium text-blue-800 mb-2">Password Requirements:</p>
+                        <ul className="text-blue-700 space-y-1 list-disc list-inside">
+                            <li>Password must be 8 characters long</li>
+                            <li>Password must have at least 1 uppercase letter</li>
+                            <li>Password must have at least 1 lowercase letter</li>
+                            <li>Password must have a special character</li>
+                        </ul>
+                    </div>
                     </form>
                 )}
             </div>
