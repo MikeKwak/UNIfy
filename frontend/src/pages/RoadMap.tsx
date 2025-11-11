@@ -136,7 +136,7 @@ export default function RoadMap() {
             </p>
             {/* Source Information */}
             <div className="mt-6 p-4 bg-lime-50 border border-lime-200 rounded-lg">
-              <p className="text-sm text-lime-800">
+              <p className=" text-lime-800">
                 <strong>Recommendation Source:</strong> {recommendations.source.replace('_', ' ')}
               </p>
               <p className="text-xs text-lime-600 mt-1">
@@ -148,7 +148,7 @@ export default function RoadMap() {
             {recommendations.needed_accommodations && recommendations.needed_accommodations.length > 0 && (
               <div className="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
                 <h3 className="font-semibold text-blue-900 mb-2">Recommended Accommodations:</h3>
-                <ul className="text-sm text-blue-800">
+                <ul className=" text-blue-800">
                   {recommendations.needed_accommodations.slice(0, 4).map((accommodation: string, index: number) => (
                     <li key={index} className="flex items-center mb-1">
                       <span className="w-2 h-2 bg-blue-400 rounded-full mr-2"></span>
@@ -192,7 +192,7 @@ export default function RoadMap() {
               onClick={() => navigate('/eligibility')}
             >
               <div className="w-16 h-16 border-4 border-dashed border-[#92BD3A] rounded-full group-hover:border-lime-600 transition-colors"></div>
-              <p className="mt-2 text-sm font-medium text-gray-800 group-hover:text-lime-600 transition-colors">
+              <p className="mt-2  font-medium text-gray-800 group-hover:text-lime-600 transition-colors">
                 Eligibility and Prerequisites
               </p>
             </div>
@@ -203,7 +203,7 @@ export default function RoadMap() {
               onClick={() => navigate('/required')}
             >
               <div className="w-16 h-16 border-4 border-dashed border-[#92BD3A] rounded-full group-hover:border-lime-600 transition-colors"></div>
-              <p className="mt-2 text-sm font-medium text-gray-800 group-hover:text-lime-600 transition-colors">
+              <p className="mt-2  font-medium text-gray-800 group-hover:text-lime-600 transition-colors">
                 Required Documents
               </p>
             </div>
@@ -214,7 +214,7 @@ export default function RoadMap() {
               onClick={() => navigate('/submission')}
             >
               <div className="w-16 h-16 border-4 border-dashed border-[#92BD3A] rounded-full group-hover:border-lime-600 transition-colors"></div>
-              <p className="mt-2 text-sm font-medium text-white-800 group-hover:text-lime-600 transition-colors">
+              <p className="mt-2  font-medium text-white-800 group-hover:text-lime-600 transition-colors">
                 Financial Aid
               </p>
             </div>

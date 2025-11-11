@@ -3,6 +3,8 @@ import NavBar from "../components/NavBar";
 import logoSvg from "../assets/logo.svg";
 
 export default function Home() {
+  const loggedIn = Boolean(localStorage.getItem("authToken"));
+
   return (
     <div className="bg-white text-black font-sans">
       {/* Navbar */}
@@ -18,12 +20,12 @@ export default function Home() {
           <p className="text-lg mb-8 text-gray-700">
             Making university admissions accessible for all, one step at a time
           </p>
-          <Link
-            to="/login"
+            <Link
+            to={loggedIn ? "/login" : "/information"}
             className="bg-lime-500 hover:bg-lime-600 text-black px-6 py-3 rounded shadow-md font-semibold transition"
-          >
+            >
             Get Started
-          </Link>
+            </Link>
         </div>
 
         {/* Image */}

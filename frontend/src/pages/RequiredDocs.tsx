@@ -92,7 +92,7 @@ If required, schedule any additional assessments or meetings with the disability
           <>
             {/* Profile Summary */}
             <div className="mb-8 p-4 bg-lime-50 border border-lime-200 rounded-md">
-              <p className="text-sm text-lime-800">
+              <p className=" text-lime-800">
                 <strong>Your Profile:</strong> {studentProfile.courses} | GPA: {studentProfile.gpa} | 
                 Mental Health: {studentProfile.mental_health} | Physical Health: {studentProfile.physical_health}
               </p>
@@ -141,7 +141,7 @@ If required, schedule any additional assessments or meetings with the disability
                     </span>
                   ))}
                 </div>
-                <p className="mt-3 text-sm text-blue-700">
+                <p className="mt-3  text-blue-700">
                   Make sure to include documentation that supports your need for these specific accommodations.
                 </p>
               </div>

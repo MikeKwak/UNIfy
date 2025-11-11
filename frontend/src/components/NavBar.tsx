@@ -32,13 +32,14 @@ export default function NavBar() {
 
           <div className="flex items-center space-x-8">
             {/* Nav Links */}
-            <ul className="hidden md:flex space-x-8 text-sm font-medium">
+            <ul className="hidden md:flex space-x-8  font-medium">
               <li>
                 <Link to="/about" className="hover:text-gray-500">
                   About us
                 </Link>
               </li>
-              <li>
+              { 
+              /* <li>
                 <Link to="/services" className="hover:text-gray-500">
                   Services
                 </Link>
@@ -47,19 +48,19 @@ export default function NavBar() {
                 <Link to="/updates" className="hover:text-gray-500">
                   Updates
                 </Link>
-              </li>
+              </li> */}
             </ul>
 
             {/* Auth Section */}
             <div className="flex items-center space-x-4">
               {isAuthenticated ? (
                 <div className="flex items-center space-x-4">
-                  <span className="text-sm text-gray-600">
+                  <span className=" text-gray-600">
                     Welcome, {user?.email || user?.username}
                   </span>
                   <button
                     onClick={handleLogout}
-                    className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-md text-sm font-medium transition"
+                    className="bg-red-500 hover:bg-red-600  text-white px-4 py-2 rounded-md font-medium transition"
                   >
                     Logout
                   </button>
@@ -68,13 +69,13 @@ export default function NavBar() {
                 <div className="flex items-center space-x-4">
                   <Link
                     to="/login"
-                    className="text-sm font-medium text-gray-700 hover:text-gray-500"
+                    className=" font-medium text-gray-700 hover:text-gray-500"
                   >
                     Login
                   </Link>
                   <Link
                     to="/signup"
-                    className="bg-lime-500 hover:bg-lime-600 text-white px-4 py-2 rounded-md text-sm font-medium transition"
+                    className="bg-lime-500 hover:bg-lime-600  text-white px-4 py-2 rounded-md font-medium transition"
                   >
                     Sign Up
                   </Link>

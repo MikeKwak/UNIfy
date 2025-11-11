@@ -14,3 +14,38 @@
   font-style: normal;
   font-display: swap;
 }
+
+
+/* @font-face {
+  TODO: Re-add Lexend font later, apparently it's more dsylexic friendly.
+  font-family: "Lexend";
+  src: url("/fonts/Lexend-Regular.ttf") format("truetype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+} */
+
+[data-theme="night"] {
+  --background: #1a1a1a;
+  --text: #e0e0e0;
+  --accent: #4da3ff;
+}
+
+.text-large {
+  --text-base: 1.25rem;  /* 20px */
+  --text-lg: 2rem;     /* 24px */
+}
+
+.main-container {
+  font-size: var(--text-base, 1rem); /* fallback to 1rem if not set */
+}
+
+/* All text elements inherit from .main-container */
+.main-container h1 {
+  font-size: calc(var(--text-base, 1rem) * 2);
+}
+
+.main-container p {
+  font-size: var(--text-base, 1rem);
+  line-height: 1.6;
+}
