@@ -15,7 +15,7 @@ export default function RoadMap() {
   const navigate = useNavigate();
   const [roadmapData, setRoadmapData] = useState<RoadmapData | null>(null);
   const [loading, setLoading] = useState(true);
-  const [university, setUniversity] = useState<string>("Your University");
+  // const [university, setUniversity] = useState<string>("Your University");
 
   useEffect(() => {
     // Load roadmap data from session storage
@@ -82,8 +82,8 @@ export default function RoadMap() {
       }
 
       setRoadmapData(roadmapDataToUse);
-      const universityName = roadmapDataToUse.recommendations?.recommendations?.[0]?.name || "Your University";
-      setUniversity(universityName);
+      //const universityName = roadmapDataToUse.recommendations?.recommendations?.[0]?.name || "Your University";
+      // setUniversity(universityName);
       
       setLoading(false);
     }
